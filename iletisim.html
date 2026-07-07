@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İletişim | Kavrulmuş</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-bg">
+    <div id="loader" class="loader-container"><div class="coffee-loader"></div></div>
+
+    <nav class="navbar scrolled" id="navbar">
+        <div class="logo">
+            <a href="index.html" style="color:inherit; text-decoration:none; display:flex; align-items:center; gap:10px;">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
+                Kavrulmuş
+            </a>
+        </div>
+        
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="Kahve, tatlı ara..." autocomplete="off">
+            <div class="search-results" id="search-results"></div>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="index.html">Anasayfa</a></li>
+            <li class="dropdown">
+                <a href="urunler.html">Ürünlerimiz ▾</a>
+                <div class="dropdown-content">
+                    <a href="urunler.html">Tüm Menü</a>
+                    <a href="urunler.html#avantajli-menuler">Avantajlı Menüler</a>
+                </div>
+            </li>
+            <li><a href="iletisim.html" style="color:var(--primary-color);">İletişim</a></li>
+            <li><button id="theme-toggle" class="theme-toggle">☀️</button></li>
+        </ul>
+        
+        <div class="nav-actions">
+            <div id="auth-menu-area">
+                <button id="open-auth" class="auth-btn">👤 Giriş Yap</button>
+            </div>
+            <div class="cart-btn" id="cart-icon">🛒 Sepet (<span id="cart-count">0</span>)</div>
+        </div>
+    </nav>
+
+    <div class="page-container contact-container">
+        <h2 class="section-title">Bize Ulaşın</h2>
+        <div class="contact-grid">
+            <div class="contact-info">
+                <h3>📍 Adresimiz</h3>
+                <p>Taşpazar Mahallesi, Kafeler Caddesi No:45<br>Aksaray Merkez, Aksaray</p>
+                <h3 style="margin-top: 30px;">📞 Telefon</h3>
+                <p>+90 (382) 212 XX XX</p>
+                <h3 style="margin-top: 30px;">✉️ E-Posta</h3>
+                <p>merhaba@kavrulmus.com</p>
+            </div>
+            <div class="contact-map">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3148.6010531508216!2d34.02237891532152!3d38.37434317965444!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14d5f5a8a183d73b%3A0xf6398b76c8c49e7b!2sAksaray%20Merkez!5e0!3m2!1str!2str!4v1689100000000!5m2!1str!2str" width="100%" height="400" style="border:0; border-radius:15px;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modallar -->
+    <div class="modal-overlay" id="auth-modal"><div class="auth-box"><span class="close-modal" id="close-auth">&times;</span><div class="auth-tabs"><button class="auth-tab active" id="tab-login">Giriş Yap</button><button class="auth-tab" id="tab-register">Kayıt Ol</button></div><form id="login-form" class="auth-form active"><input type="email" id="login-email" placeholder="E-Posta Adresiniz" required><input type="password" id="login-pass" placeholder="Şifreniz" required><button type="submit" class="cta-btn" style="width:100%; border:none; background:var(--primary-color); color:#000;">Giriş Yap</button></form><form id="register-form" class="auth-form"><input type="text" id="reg-name" placeholder="Adınız Soyadınız" required><input type="email" id="reg-email" placeholder="E-Posta Adresiniz" required><input type="password" id="reg-pass" placeholder="Şifre Belirleyin" required><button type="submit" class="cta-btn" style="width:100%; border:none; background:var(--primary-color); color:#000;">Üye Ol</button></form></div></div>
+
+    <footer><p>&copy; 2024 Kavrulmuş Kahve - Aksaray Merkez</p></footer>
+    <div class="cart-overlay" id="cart-overlay"></div><div class="cart-sidebar" id="cart-sidebar"><div class="cart-header"><h2>Sepetiniz</h2><button class="close-cart" id="close-cart">✕</button></div><div class="cart-items" id="cart-items"></div><div class="cart-footer"><h3>Toplam: <span id="cart-total">0.00</span> TL</h3><button class="checkout-btn">Siparişi Tamamla</button></div></div>
+    <div id="toast" class="toast">Mesaj!</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
