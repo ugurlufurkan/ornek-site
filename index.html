@@ -6,13 +6,18 @@
     <title>Kavrulmuş | Anasayfa</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
+    <!-- Parçalanmış CSS Dosyaları -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/hero.css">
-    <link rel="stylesheet" href="css/products.css"> </head>
+    <link rel="stylesheet" href="css/products.css">
+    <link rel="stylesheet" href="css/toast.css"> <!-- YENİ: Toast ve Ripple Animasyonları -->
+</head>
 <body>
+    <!-- Altın Cursor -->
     <div class="cursor-ring" id="cursor-ring"></div>
 
+    <!-- Yeni Kahve Loader -->
     <div id="loader" class="loader-container">
         <div class="cup-loader">
             <div class="steam steam-1"></div>
@@ -23,6 +28,7 @@
         <p style="margin-top: 25px; font-weight: bold; color: var(--gold-accent);">Taptaze demleniyor...</p>
     </div>
 
+    <!-- PREMIUM NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="nav-brand">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
@@ -44,6 +50,7 @@
         </div>
     </nav>
 
+    <!-- PREMIUM HERO -->
     <header class="hero">
         <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/images/hero/hero-poster.webp">
             <source src="assets/videos/hero.mp4" type="video/mp4">
@@ -65,6 +72,7 @@
         </div>
     </header>
 
+    <!-- PREMIUM ÜRÜN KARTLARI -->
     <section id="menu" class="products-section">
         <div class="section-header">
             <h2>Öne Çıkan Lezzetler</h2>
@@ -73,6 +81,7 @@
         
         <div class="products-grid">
             
+            <!-- Kart 1 -->
             <div class="product-card">
                 <div class="card-image-wrapper">
                     <div class="card-badges">
@@ -96,6 +105,7 @@
                 </div>
             </div>
 
+            <!-- Kart 2 -->
             <div class="product-card">
                 <div class="card-image-wrapper">
                     <div class="card-badges">
@@ -118,6 +128,7 @@
                 </div>
             </div>
 
+            <!-- Kart 3 -->
             <div class="product-card">
                 <div class="card-image-wrapper">
                     <div class="card-badges">
@@ -143,6 +154,7 @@
         </div>
     </section>
 
+    <!-- KAHVE QUİZİ -->
     <section id="quiz" class="quiz-section page-bg" style="padding: 100px 50px; text-align:center;">
         <div class="quiz-container">
             <h2>Sana En Uygun Kahveyi Bulalım ☕</h2>
@@ -161,6 +173,7 @@
         </div>
     </section>
 
+    <!-- DÜNYA KAHVE HARİTASI -->
     <section class="map-section" style="padding: 80px 50px; text-align:center; background:#111;">
         <h2 class="section-title">Çekirdeklerimizin Yolculuğu 🗺️</h2>
         <div class="world-map-container" style="position: relative; max-width: 1000px; margin: 0 auto;">
@@ -181,6 +194,7 @@
         </div>
     </section>
 
+    <!-- YENİ GELİŞMİŞ FOOTER -->
     <footer class="advanced-footer" style="background: #050505; padding: 60px 5%; border-top: 1px solid rgba(255,255,255,0.1);">
         <div class="footer-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px;">
             <div class="footer-brand">
@@ -205,7 +219,12 @@
         </div>
     </footer>
 
+    <!-- Toast Bildirimleri İçin Kutu -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- JS Modülleri -->
     <script src="js/app.js"></script>
+    <script src="js/toast.js"></script> <!-- YENİ EKLENDİ -->
     <script src="js/script.js"></script> 
 </body>
 </html>
