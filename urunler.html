@@ -6,11 +6,10 @@
     <title>Menü & Sipariş | Kavrulmuş</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <!-- Ortak CSS Dosyaları -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/products.css">
-    <link rel="stylesheet" href="css/pages.css"> <!-- YENİ: Alt sayfa stilleri -->
+    <link rel="stylesheet" href="css/pages.css">
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/footer.css">
@@ -18,7 +17,6 @@
 </head>
 <body>
 
-    <!-- PREMIUM NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="nav-brand">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
@@ -38,13 +36,11 @@
         </div>
     </nav>
 
-    <!-- SAYFA BAŞLIĞI -->
     <header class="page-header">
         <h1>Tüm Kahvelerimiz</h1>
         <p>Dünyanın en iyi çiftliklerinden özenle seçilen, taptaze kavrulmuş çekirdeklerimizi keşfedin.</p>
     </header>
 
-    <!-- FİLTRE MENÜSÜ -->
     <div class="filter-menu">
         <button class="filter-btn active">Tümü</button>
         <button class="filter-btn">Espresso Blend</button>
@@ -52,125 +48,12 @@
         <button class="filter-btn">Ekipmanlar</button>
     </div>
 
-    <!-- ÜRÜNLER IZGARASI -->
     <section class="products-section" style="padding-top: 20px;">
-        <div class="products-grid">
-            
-            <!-- Kart 1 -->
-            <div class="product-card">
-                <div class="card-image-wrapper">
-                    <div class="card-badges">
-                        <span class="badge bestseller">🔥 Bestseller</span>
-                        <span class="badge weight">250g</span>
-                    </div>
-                    <button class="wishlist-btn">♡</button>
-                    <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=500&q=80" alt="Premium Espresso Blend" class="product-img">
-                </div>
-                <div class="card-content">
-                    <div class="stars">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.8rem;">(128)</span></div>
-                    <h3 class="product-title">Premium Espresso Blend</h3>
-                    <p class="product-type">%100 Arabica / Çikolata, Fındık</p>
-                    <div class="card-footer">
-                        <span class="price">335 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 2 -->
-            <div class="product-card">
-                <div class="card-image-wrapper">
-                    <div class="card-badges"><span class="badge weight">250g</span></div>
-                    <button class="wishlist-btn">♡</button>
-                    <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80" alt="Etiyopya Yirgacheffe" class="product-img">
-                </div>
-                <div class="card-content">
-                    <div class="stars">⭐⭐⭐⭐½ <span style="color:#666; font-size:0.8rem;">(85)</span></div>
-                    <h3 class="product-title">Etiyopya Yirgacheffe</h3>
-                    <p class="product-type">Yöresel Filtre / Çiçeksi, Yasemin</p>
-                    <div class="card-footer">
-                        <span class="price">380 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 3 -->
-            <div class="product-card">
-                <div class="card-image-wrapper">
-                    <div class="card-badges"><span class="badge weight">250g</span></div>
-                    <button class="wishlist-btn">♡</button>
-                    <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=500&q=80" alt="Kolombiya Supremo" class="product-img">
-                </div>
-                <div class="card-content">
-                    <div class="stars">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.8rem;">(210)</span></div>
-                    <h3 class="product-title">Kolombiya Supremo</h3>
-                    <p class="product-type">Yöresel Filtre / Karamel, Kakao</p>
-                    <div class="card-footer">
-                        <span class="price">360 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 4 -->
-            <div class="product-card">
-                <div class="card-image-wrapper">
-                    <div class="card-badges"><span class="badge weight">250g</span></div>
-                    <button class="wishlist-btn">♡</button>
-                    <img src="https://images.unsplash.com/photo-1610889556528-9a770e32642f?auto=format&fit=crop&w=500&q=80" alt="Brezilya Cerrado" class="product-img">
-                </div>
-                <div class="card-content">
-                    <div class="stars">⭐⭐⭐⭐ <span style="color:#666; font-size:0.8rem;">(64)</span></div>
-                    <h3 class="product-title">Brezilya Cerrado</h3>
-                    <p class="product-type">Filtre & Espresso / Kırmızı Meyveler</p>
-                    <div class="card-footer">
-                        <span class="price">320 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 5 -->
-            <div class="product-card">
-                <div class="card-image-wrapper">
-                    <div class="card-badges"><span class="badge weight">1000g</span></div>
-                    <button class="wishlist-btn">♡</button>
-                    <img src="https://images.unsplash.com/photo-1558160074-4d7d8bdf4256?auto=format&fit=crop&w=500&q=80" alt="Guatemala Antigua" class="product-img">
-                </div>
-                <div class="card-content">
-                    <div class="stars">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.8rem;">(42)</span></div>
-                    <h3 class="product-title">Guatemala Antigua</h3>
-                    <p class="product-type">Toptan Çekirdek / Tatlı Baharat</p>
-                    <div class="card-footer">
-                        <span class="price">1150 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 6 -->
-            <div class="product-card">
-                <div class="card-image-wrapper">
-                    <div class="card-badges"><span class="badge bestseller">Sınırlı</span></div>
-                    <button class="wishlist-btn">♡</button>
-                    <img src="https://images.unsplash.com/photo-1498604218671-897db674bc29?auto=format&fit=crop&w=500&q=80" alt="Chemex 3 Cup" class="product-img">
-                </div>
-                <div class="card-content">
-                    <div class="stars">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.8rem;">(19)</span></div>
-                    <h3 class="product-title">Chemex Ahşap Yüzüklü</h3>
-                    <p class="product-type">Demleme Ekipmanı / 3 Fincan Kapasite</p>
-                    <div class="card-footer">
-                        <span class="price">1450 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Ekle</button>
-                    </div>
-                </div>
-            </div>
-
+        <div class="products-grid" id="dynamic-products-grid">
+            <p style="text-align: center; width: 100%; color: var(--gold-accent);">Kahveler kavruluyor... Lütfen bekleyin.</p>
         </div>
     </section>
 
-    <!-- PREMIUM FOOTER (Aynı) -->
     <footer class="premium-footer">
         <div class="footer-grid">
             <div class="footer-col footer-brand">
@@ -197,7 +80,6 @@
         </div>
     </footer>
 
-    <!-- SEPET VE MODALLAR (Aynı) -->
     <div class="cart-overlay" id="cart-overlay"></div>
     <aside class="cart-sidebar" id="cart-sidebar">
         <div class="cart-header"><h2>Sepetiniz</h2><button class="close-cart" id="close-cart">✕</button></div>
@@ -208,14 +90,14 @@
         </div>
     </aside>
     <div id="toast-container" class="toast-container"></div>
+    
     <div class="modal-overlay" id="auth-modal"><div class="modal-box"><span class="close-modal" id="close-auth">&times;</span><h2 style="color:var(--gold-accent); margin-bottom:20px;">Giriş Yap</h2><form id="login-form" class="modal-form active"><input type="email" placeholder="E-Posta" required><input type="password" placeholder="Şifre" required><button type="submit" class="btn-premium primary">Giriş</button></form></div></div>
     <div class="modal-overlay" id="checkout-modal"><div class="modal-box"><span class="close-modal close-modal-btn">&times;</span><h2 style="color:var(--gold-accent); margin-bottom:20px;">Ödeme</h2><form id="checkout-form" class="modal-form active"><input type="text" placeholder="Ad Soyad" required><button type="submit" class="btn-premium primary">Onayla</button></form></div></div>
     <div class="modal-overlay" id="tracking-modal"><div class="modal-box"><span class="close-modal close-modal-btn">&times;</span><h2 style="color:var(--gold-accent);">Siparişiniz Alındı!</h2><div class="progress-bar-bg"><div class="progress-fill" id="track-progress"></div></div></div></div>
 
-    <!-- JS Modülleri -->
     <script src="js/app.js"></script>
     <script src="js/toast.js"></script>
     <script src="js/cart.js"></script>
     <script src="js/modal.js"></script>
-</body>
+    <script src="js/api.js"></script> </body>
 </html>
