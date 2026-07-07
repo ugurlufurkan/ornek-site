@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/hero.css">
-</head>
+    <link rel="stylesheet" href="css/products.css"> </head>
 <body>
     <div class="cursor-ring" id="cursor-ring"></div>
 
@@ -59,11 +59,89 @@
             <p class="hero-subtitle">Premium kahve deneyimini her fincanda hissedin. Aksaray'ın 3. nesil kavurma atölyesinden kapınıza.</p>
             
             <div class="hero-buttons">
-                <a href="urunler.html" class="btn-premium primary">Menüyü İncele</a>
+                <a href="#menu" class="btn-premium primary">Menüyü İncele</a>
                 <a href="#quiz" class="btn-premium secondary">Kahveni Bul ↓</a>
             </div>
         </div>
     </header>
+
+    <section id="menu" class="products-section">
+        <div class="section-header">
+            <h2>Öne Çıkan Lezzetler</h2>
+            <p>En çok tercih edilen taze kavrulmuş çekirdeklerimiz.</p>
+        </div>
+        
+        <div class="products-grid">
+            
+            <div class="product-card">
+                <div class="card-image-wrapper">
+                    <div class="card-badges">
+                        <span class="badge bestseller">🔥 Bestseller</span>
+                        <span class="badge weight">250g</span>
+                    </div>
+                    <button class="wishlist-btn">♡</button>
+                    <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=500&q=80" alt="Espresso" class="product-img">
+                    <div class="quick-view-overlay">
+                        <button class="btn-premium secondary">👁️ Quick View</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stars">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.8rem;">(128)</span></div>
+                    <h3 class="product-title">Premium Espresso Blend</h3>
+                    <p class="product-type">%100 Arabica</p>
+                    <div class="card-footer">
+                        <span class="price">335 TL</span>
+                        <button class="btn-premium primary add-to-cart">🛒 Sepete Ekle</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="card-image-wrapper">
+                    <div class="card-badges">
+                        <span class="badge weight">250g</span>
+                    </div>
+                    <button class="wishlist-btn">♡</button>
+                    <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80" alt="Filtre Kahve" class="product-img">
+                    <div class="quick-view-overlay">
+                        <button class="btn-premium secondary">👁️ Quick View</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stars">⭐⭐⭐⭐½ <span style="color:#666; font-size:0.8rem;">(85)</span></div>
+                    <h3 class="product-title">Etiyopya Yirgacheffe</h3>
+                    <p class="product-type">Yöresel Filtre</p>
+                    <div class="card-footer">
+                        <span class="price">380 TL</span>
+                        <button class="btn-premium primary add-to-cart">🛒 Sepete Ekle</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="card-image-wrapper">
+                    <div class="card-badges">
+                        <span class="badge weight">1000g</span>
+                    </div>
+                    <button class="wishlist-btn">♡</button>
+                    <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=500&q=80" alt="Kolombiya" class="product-img">
+                    <div class="quick-view-overlay">
+                        <button class="btn-premium secondary">👁️ Quick View</button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stars">⭐⭐⭐⭐⭐ <span style="color:#666; font-size:0.8rem;">(210)</span></div>
+                    <h3 class="product-title">Kolombiya Supremo</h3>
+                    <p class="product-type">Toptan Çekirdek</p>
+                    <div class="card-footer">
+                        <span class="price">1250 TL</span>
+                        <button class="btn-premium primary add-to-cart">🛒 Sepete Ekle</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
 
     <section id="quiz" class="quiz-section page-bg" style="padding: 100px 50px; text-align:center;">
         <div class="quiz-container">
@@ -128,5 +206,6 @@
     </footer>
 
     <script src="js/app.js"></script>
-    <script src="js/script.js"></script> </body>
+    <script src="js/script.js"></script> 
+</body>
 </html>
