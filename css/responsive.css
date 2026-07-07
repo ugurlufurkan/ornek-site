@@ -1,0 +1,71 @@
+/* css/responsive.css */
+
+/* Tablet ve Mobil Cihazlar İçin (768px ve altı) */
+@media (max-width: 768px) {
+    
+    /* 1. Navbar (Üst Menü) */
+    .navbar {
+        flex-direction: column;
+        padding: 15px 5%;
+        gap: 15px;
+    }
+    
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* 2. Tepe Başlıkları */
+    .page-header {
+        padding: 130px 5% 50px;
+    }
+
+    .page-header h1 {
+        font-size: 2.2rem;
+    }
+
+    /* 3. Izgara Yapıları (Ürünler, Blog ve İletişim alt alta dizilsin) */
+    .products-grid,
+    .blog-grid,
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    /* 4. Sepet Yan Paneli */
+    .cart-sidebar {
+        width: 100%; /* Telefondan girince sepet ekranı tam kaplasın */
+    }
+
+    /* 5. Footer (Alt Bilgi) */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 30px;
+    }
+
+    /* 6. Modallar (Kayıt / Ödeme Formları) */
+    .modal-box {
+        width: 90%;
+        padding: 30px 20px;
+    }
+}
+
+/* Küçük Ekranlı Telefonlar İçin Ekstra Daraltma (480px ve altı) */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .filter-menu {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        max-width: 250px;
+    }
+}

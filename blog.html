@@ -6,19 +6,17 @@
     <title>Kahve Rehberi | Kavrulmuş</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
-    <!-- Ortak CSS Dosyaları -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/pages.css">
-    <link rel="stylesheet" href="css/blog.css"> <!-- YENİ: Blog kart stilleri -->
+    <link rel="stylesheet" href="css/blog.css">
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/modal.css">
-</head>
+    <link rel="stylesheet" href="css/responsive.css"> </head>
 <body>
 
-    <!-- PREMIUM NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="nav-brand">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
@@ -38,13 +36,11 @@
         </div>
     </nav>
 
-    <!-- SAYFA BAŞLIĞI -->
     <header class="page-header">
         <h1>Kahve Rehberi</h1>
         <p>Demleme tekniklerinden çekirdek hikayelerine kadar, kahve kültürüne dair aradığınız her şey burada.</p>
     </header>
 
-    <!-- FİLTRE MENÜSÜ -->
     <div class="filter-menu">
         <button class="filter-btn active">Tümü</button>
         <button class="filter-btn">Demleme Rehberi</button>
@@ -52,11 +48,9 @@
         <button class="filter-btn">Haberler</button>
     </div>
 
-    <!-- BLOG IZGARASI -->
     <section class="blog-section">
         <div class="blog-grid">
             
-            <!-- Blog Kart 1 -->
             <article class="blog-card">
                 <div class="blog-img-wrapper">
                     <span class="blog-category">Demleme Rehberi</span>
@@ -70,7 +64,6 @@
                 </div>
             </article>
 
-            <!-- Blog Kart 2 -->
             <article class="blog-card">
                 <div class="blog-img-wrapper">
                     <span class="blog-category">Çekirdek Hikayeleri</span>
@@ -84,7 +77,6 @@
                 </div>
             </article>
 
-            <!-- Blog Kart 3 -->
             <article class="blog-card">
                 <div class="blog-img-wrapper">
                     <span class="blog-category">Haberler</span>
@@ -101,7 +93,6 @@
         </div>
     </section>
 
-    <!-- PREMIUM FOOTER -->
     <footer class="premium-footer">
         <div class="footer-grid">
             <div class="footer-col footer-brand">
@@ -128,7 +119,6 @@
         </div>
     </footer>
 
-    <!-- SEPET VE MODALLAR (Ana Şablon ile Aynı) -->
     <div class="cart-overlay" id="cart-overlay"></div>
     <aside class="cart-sidebar" id="cart-sidebar">
         <div class="cart-header"><h2>Sepetiniz</h2><button class="close-cart" id="close-cart">✕</button></div>
@@ -144,7 +134,6 @@
     <div class="modal-overlay" id="checkout-modal"><div class="modal-box"><span class="close-modal close-modal-btn">&times;</span><h2 style="color:var(--gold-accent); margin-bottom:20px;">Ödeme</h2><form id="checkout-form" class="modal-form active"><input type="text" placeholder="Ad Soyad" required><button type="submit" class="btn-premium primary">Onayla</button></form></div></div>
     <div class="modal-overlay" id="tracking-modal"><div class="modal-box"><span class="close-modal close-modal-btn">&times;</span><h2 style="color:var(--gold-accent);">Siparişiniz Alındı!</h2><div class="progress-bar-bg"><div class="progress-fill" id="track-progress"></div></div></div></div>
 
-    <!-- JS Modülleri -->
     <script src="js/app.js"></script>
     <script src="js/toast.js"></script>
     <script src="js/cart.js"></script>
