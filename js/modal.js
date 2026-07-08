@@ -10,36 +10,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
-    // --- 1. KALICI OTURUM KONTROLÜ (LOCALSTORAGE) ---
-    // Bu fonksiyon sayfa her yenilendiğinde çalışıp cebimizde kimlik var mı diye bakar
+    // --- 1. GÜVENLİ OTURUM KONTROLÜ (JWT TOKEN İLE) ---
     const checkSession = () => {
-        const loggedInUser = localStorage.getItem('kavrulmus_user');
-        if (loggedInUser && openAuthBtn) {
-            const user = JSON.parse(loggedInUser);
-            // İsmi yazdır ve yanına Çıkış yazısı ekle
-            openAuthBtn.innerHTML = `👤 ${user.email.split('@')[0]} (Çıkış)`;
+        const token = localStorage.getItem('kavrulmus_token');
+        const userEmail = localStorage.getItem('kavrulmus_user_email');
+        
+        if (token && userEmail && openAuthBtn) {
+            openAuthBtn.innerHTML = `👤 ${userEmail.split('@')[0]} (Çıkış)`;
             openAuthBtn.classList.add('logged-in'); 
         }
     };
-    checkSession(); // Sayfa açılır açılmaz çalıştır!
+    checkSession(); 
 
     // Modalı Aç veya Çıkış Yap
     if (openAuthBtn) {
         openAuthBtn.addEventListener('click', () => {
             if (openAuthBtn.classList.contains('logged-in')) {
-                // Eğer zaten giriş yapılmışsa, butona basınca ÇIKIŞ yapsın
-                localStorage.removeItem('kavrulmus_user');
+                // ÇIKIŞ YAP (Token'ı Yok Et)
+                localStorage.removeItem('kavrulmus_token');
+                localStorage.removeItem('kavrulmus_user_email');
                 openAuthBtn.innerHTML = `👤 Giriş / Kayıt`;
                 openAuthBtn.classList.remove('logged-in');
                 window.showToast('ℹ️ Başarıyla çıkış yapıldı.');
+                setTimeout(() => window.location.reload(), 1000); // Sepeti vb sıfırlamak için sayfayı tazele
             } else {
-                // Giriş yapılmamışsa modalı aç
                 authModal.classList.add('active');
             }
         });
     }
 
-    // Modal Kapatma İşlemleri
     closeBtns.forEach(btn => btn.addEventListener('click', function() {
         this.closest('.modal-overlay').classList.remove('active');
     }));
@@ -47,32 +46,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active');
     });
 
-    // --- 2. SEKMELER ARASI GEÇİŞ (TAKILMA HATASI ÇÖZÜLDÜ) ---
+    // --- 2. SEKMELER ARASI GEÇİŞ ---
     if (tabLogin && tabRegister) {
         tabLogin.addEventListener('click', (e) => {
-            e.preventDefault(); // TAKILMAYI ÖNLEYEN KOD BURASI
-            tabLogin.style.background = 'var(--gold-accent)';
-            tabLogin.style.color = '#111';
-            tabRegister.style.background = 'transparent';
-            tabRegister.style.color = 'var(--text-light)';
-            
-            loginForm.style.display = 'flex';
-            registerForm.style.display = 'none';
+            e.preventDefault();
+            tabLogin.className = "auth-tab active";
+            tabRegister.className = "auth-tab";
+            tabLogin.style.background = 'var(--gold-accent)'; tabLogin.style.color = '#111';
+            tabRegister.style.background = 'transparent'; tabRegister.style.color = 'var(--text-light)';
+            loginForm.style.display = 'flex'; registerForm.style.display = 'none';
         });
 
         tabRegister.addEventListener('click', (e) => {
-            e.preventDefault(); // TAKILMAYI ÖNLEYEN KOD BURASI
-            tabRegister.style.background = 'var(--gold-accent)';
-            tabRegister.style.color = '#111';
-            tabLogin.style.background = 'transparent';
-            tabLogin.style.color = 'var(--text-light)';
-            
-            registerForm.style.display = 'flex';
-            loginForm.style.display = 'none';
+            e.preventDefault();
+            tabRegister.className = "auth-tab active";
+            tabLogin.className = "auth-tab";
+            tabRegister.style.background = 'var(--gold-accent)'; tabRegister.style.color = '#111';
+            tabLogin.style.background = 'transparent'; tabLogin.style.color = 'var(--text-light)';
+            registerForm.style.display = 'flex'; loginForm.style.display = 'none';
         });
     }
 
-    // --- 3. GERÇEK GİRİŞ YAPMA İŞLEMİ (LOGIN) ---
+    // --- 3. GERÇEK GİRİŞ YAPMA İŞLEMİ (JWT ALIMI) ---
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -92,11 +87,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     authModal.classList.remove('active');
                     loginForm.reset();
                     
-                    // KULLANICIYI HAFIZAYA KAYDET (KALICI OTURUM)
-                    localStorage.setItem('kavrulmus_user', JSON.stringify(data.user));
-                    checkSession(); // Navbar'ı güncelle
+                    // TOKEN VE EMAİL'İ GÜVENLİCE HAFIZAYA AL
+                    localStorage.setItem('kavrulmus_token', data.token);
+                    localStorage.setItem('kavrulmus_user_email', data.user.email);
+                    checkSession(); 
                 } else {
-                    window.showToast(`❌ ${data.mesaj}`); // Hatalı şifre uyarısı
+                    window.showToast(`❌ ${data.mesaj}`);
                 }
             } catch (error) {
                 window.showToast('❌ Sunucuya bağlanılamadı.');
@@ -104,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. KAYIT OLMA İŞLEMİ (REGISTER) ---
+    // --- 4. KAYIT OLMA İŞLEMİ ---
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault(); 
@@ -125,8 +121,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     authModal.classList.remove('active'); 
                     registerForm.reset(); 
                     
-                    // KAYIT OLDUKTAN SONRA OTOMATİK GİRİŞ YAP VE HAFIZAYA AL
-                    localStorage.setItem('kavrulmus_user', JSON.stringify(data.user));
+                    localStorage.setItem('kavrulmus_token', data.token);
+                    localStorage.setItem('kavrulmus_user_email', data.user.email);
                     checkSession();
                 } else {
                     window.showToast(`❌ ${data.mesaj}`);
