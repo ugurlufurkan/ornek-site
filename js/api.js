@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             productsGrid.innerHTML = '<p style="color:#888; text-align:center; width: 100%;">Henüz vitrine kahve eklenmedi.</p>';
             return;
         }
+        if (typeof updateFavoriteCounter === "function") {
+    updateFavoriteCounter();
+}
 
         // Ürünleri Ekrana Çiz
         productsGrid.innerHTML = urunler.map(urun => {
@@ -35,7 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="card-badges">
                         ${stokBadge}
                     </div>
-                    <button class="wishlist-btn">♡</button>
+                    <button class="wishlist-btn" data-id="${urun.id}">
+                     ♡
+                    </button>
                     <a href="urun-detay.html?id=${urun.id}">
                         <img src="${urun.resim}" alt="${urun.baslik}" class="product-img" style="${isTukendi ? 'filter: grayscale(100%);' : ''}">
                     </a>

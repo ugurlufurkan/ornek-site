@@ -217,3 +217,28 @@
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
 }
+.wishlist-btn.active{
+    background:#e63946;
+    color:white;
+}
+
+.wishlist-btn.active:hover{
+    background:#c71f34;
+}
+
+.favorite-count{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    width:18px;
+    height:18px;
+
+    background:#e63946;
+    color:white;
+
+    border-radius:50%;
+
+    font-size:.7rem;
+    font-weight:bold;
+}

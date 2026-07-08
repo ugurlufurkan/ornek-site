@@ -50,3 +50,65 @@
     align-items: center;
     gap: 1.5rem;
 }
+
+/* ===========================
+   NAVBAR ICONLARI
+=========================== */
+
+.nav-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1.25rem;
+
+    transition: all .3s ease;
+}
+
+.nav-icon:hover {
+    color: var(--gold-accent);
+    background: rgba(255,255,255,.08);
+    transform: translateY(-2px);
+}
+
+/* ===========================
+   FAVORİ SAYACI
+=========================== */
+
+.favorite-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+
+    min-width: 20px;
+    height: 20px;
+
+    padding: 0 5px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: #e63946;
+    color: white;
+
+    border-radius: 50%;
+    border: 2px solid var(--bg-dark);
+
+    font-size: .72rem;
+    font-weight: 700;
+
+    transform: scale(0);
+    transition: .25s ease;
+}
+
+.favorite-count.show {
+    transform: scale(1);
+}

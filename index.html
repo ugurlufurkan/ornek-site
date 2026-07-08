@@ -85,19 +85,32 @@
             <li><a href="iletisim.html">İletişim</a></li>
         </ul>
         
-        <div class="nav-actions">
-            <div class="account-menu" id="account-menu">
-                <button id="open-auth" class="btn-text">👤 Giriş Yap</button>
-                <div class="account-dropdown" id="account-dropdown">
-                    <a href="#" id="account-profile-link">👤 Hesabım</a>
-                    <a href="#" id="account-favorites-link">♡ Favoriler</a>
-                    <a href="#" id="account-logout-link" class="logout-link">🚪 Çıkış Yap</a>
-                </div>
-            </div>
-            <button class="btn-premium cart-btn" id="cart-icon">
-                🛒 Sepet (<span id="cart-count">0</span>)
-            </button>
+       <div class="nav-actions">
+
+    <div class="account-menu" id="account-menu">
+        <button id="open-auth" class="btn-text">
+            👤 Giriş Yap
+        </button>
+
+        <div class="account-dropdown" id="account-dropdown">
+            <a href="#" id="account-profile-link">👤 Hesabım</a>
+            <a href="favoriler.html" id="account-favorites-link">❤️ Favoriler</a>
+            <a href="#" id="account-logout-link" class="logout-link">🚪 Çıkış Yap</a>
         </div>
+    </div>
+
+    <!-- Favoriler -->
+    <a href="favoriler.html" class="nav-icon favorite-nav">
+        ❤️
+        <span class="favorite-count" id="favorite-count">0</span>
+    </a>
+
+    <!-- Sepet -->
+    <button class="btn-premium cart-btn" id="cart-icon">
+        🛒 Sepet (<span id="cart-count">0</span>)
+    </button>
+
+</div>
     </nav>
 
     <header class="hero">
@@ -381,5 +394,6 @@
     <script src="js/animation.js"></script>
     <script src="js/quiz.js"></script> 
     <script src="js/cookie.js"></script>
+    <script src="js/favorites.js"></script>
 </body>
 </html>
