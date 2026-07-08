@@ -1,28 +1,28 @@
 // server.js
+require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
-const bcrypt = require('bcryptjs'); 
-const jwt = require('jsonwebtoken'); 
-const { Pool } = require('pg'); // YENİ: PostgreSQL Kütüphanesi
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { Pool } = require('pg');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'KAVRULMUS_GIZLI_ANAHTAR_2026'; 
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 app.use(express.static(__dirname));
 app.use(express.json());
 
-// --- POSTGRESQL BAĞLANTI AYARLARI (Docker'daki ayarlarımız) ---
 const pool = new Pool({
-    user: 'patron',
-    host: 'localhost',
-    database: 'kavrulmus_db',
-    password: 'supergizlisifre2026',
-    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 });
 
-// --- VERİTABANI TABLOLARINI OTOMATİK OLUŞTURMA (MIGRATION) ---
 const initDB = async () => {
     try {
         await pool.query(`
@@ -62,7 +62,37 @@ const initDB = async () => {
 };
 initDB();
 
-// 1. API: Ürünleri Çek (SQL GET)
+// --- ADMIN YETKİ KONTROLÜ (MIDDLEWARE) ---
+function verifyAdmin(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ mesaj: "Yetkisiz erişim: Token bulunamadı." });
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err || decoded.role !== 'admin') {
+            return res.status(403).json({ mesaj: "Yetkisiz erişim: Bu işlem için admin yetkisi gerekli." });
+        }
+        req.admin = decoded;
+        next();
+    });
+}
+
+// --- ADMIN GİRİŞ API'SI ---
+app.post('/api/admin/login', (req, res) => {
+    const { password } = req.body;
+
+    if (!password || password !== ADMIN_PASSWORD) {
+        return res.status(401).json({ mesaj: "Hatalı admin şifresi!" });
+    }
+
+    const token = jwt.sign({ role: 'admin' }, JWT_SECRET, { expiresIn: '4h' });
+    res.status(200).json({ mesaj: "Admin girişi başarılı!", token });
+});
+
+// 1. API: Ürünleri Çek
 app.get('/api/urunler', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM products ORDER BY id ASC');
@@ -72,8 +102,8 @@ app.get('/api/urunler', async (req, res) => {
     }
 });
 
-// 2. API: YENİ ÜRÜN EKLE (SQL INSERT)
-app.post('/api/urunler', async (req, res) => {
+// 2. API: YENİ ÜRÜN EKLE (KORUMALI)
+app.post('/api/urunler', verifyAdmin, async (req, res) => {
     const { baslik, tur, fiyat, resimUrl, stok } = req.body;
     try {
         const result = await pool.query(
@@ -86,7 +116,7 @@ app.post('/api/urunler', async (req, res) => {
     }
 });
 
-// 3. API: YENİ ÜYE KAYDI (SQL INSERT & BCRYPT)
+// 3. API: YENİ ÜYE KAYDI
 app.post('/api/auth/register', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -100,54 +130,51 @@ app.post('/api/auth/register', async (req, res) => {
             'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
             [email, hashedPassword]
         );
-        
+
         const yeniKullanici = result.rows[0];
-        const token = jwt.sign({ id: yeniKullanici.id, email: yeniKullanici.email }, JWT_SECRET, { expiresIn: '2h' });
+        const token = jwt.sign({ id: yeniKullanici.id, email: yeniKullanici.email, role: 'customer' }, JWT_SECRET, { expiresIn: '2h' });
         res.status(201).json({ mesaj: "Kayıt başarıyla tamamlandı!", token, user: { email: yeniKullanici.email } });
     } catch (err) {
         res.status(500).json({ mesaj: "Kayıt başarısız" });
     }
 });
 
-// 4. API: GİRİŞ YAP (SQL SELECT & BCRYPT)
+// 4. API: GİRİŞ YAP
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
     try {
         const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         const user = result.rows[0];
-        
+
         if (!user) return res.status(401).json({ mesaj: "Hatalı e-posta veya şifre!" });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(401).json({ mesaj: "Hatalı e-posta veya şifre!" });
 
-        const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '2h' });
+        const token = jwt.sign({ id: user.id, email: user.email, role: 'customer' }, JWT_SECRET, { expiresIn: '2h' });
         res.status(200).json({ mesaj: "Giriş başarılı, hoş geldin!", token, user: { email: user.email } });
     } catch (err) {
         res.status(500).json({ mesaj: "Giriş yapılırken sunucu hatası" });
     }
 });
 
-// 5. API: SİPARİŞİ KAYDET VE STOKLARI DÜŞÜR (SQL TRANSACTION)
+// 5. API: SİPARİŞİ KAYDET VE STOKLARI DÜŞÜR
 app.post('/api/siparis', async (req, res) => {
     const { musteriAd, telefon, adres, odemeYontemi, sepet, toplamTutar, userEmail } = req.body;
-    
-    // İşlemlerin yarıda kesilmesini önlemek için Transaction başlatıyoruz
+
     const client = await pool.connect();
-    
+
     try {
-        await client.query('BEGIN'); // SQL: İşlemi başlat
+        await client.query('BEGIN');
 
         const takipNo = 'KVR-' + Math.floor(1000 + Math.random() * 9000);
-        
-        // 1. Siparişi veritabanına yaz (JSONB formatında sepeti gömüyoruz)
+
         await client.query(
             `INSERT INTO orders (id, musteri_ad, telefon, adres, odeme_yontemi, user_email, urunler, toplam_tutar) 
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
             [takipNo, musteriAd, telefon, adres, odemeYontemi, userEmail, JSON.stringify(sepet), toplamTutar]
         );
 
-        // 2. Sepetteki her ürün için SQL'de stoğu düşür (Eksiye düşmeyi GREATEST(0, ...) ile engelliyoruz)
         for (const item of sepet) {
             await client.query(
                 'UPDATE products SET stok = GREATEST(0, stok - $1) WHERE id = $2',
@@ -155,10 +182,10 @@ app.post('/api/siparis', async (req, res) => {
             );
         }
 
-        await client.query('COMMIT'); // SQL: Her şey başarılı, kaydet
+        await client.query('COMMIT');
         res.status(201).json({ mesaj: "Sipariş başarıyla alındı!", takipNo });
     } catch (err) {
-        await client.query('ROLLBACK'); // SQL: Hata varsa hiçbir şeyi kaydetme, geri al
+        await client.query('ROLLBACK');
         console.error(err);
         res.status(500).json({ mesaj: "Sipariş kaydedilemedi" });
     } finally {
@@ -166,13 +193,11 @@ app.post('/api/siparis', async (req, res) => {
     }
 });
 
-// 6. API: SİPARİŞLERİ GETİR (ADMIN PANELİ İÇİN - SQL GET)
-app.get('/api/siparisler', async (req, res) => {
+// 6. API: SİPARİŞLERİ GETİR (KORUMALI)
+app.get('/api/siparisler', verifyAdmin, async (req, res) => {
     try {
-        // En son gelen sipariş en üstte olsun diye DESC sıralıyoruz
         const result = await pool.query('SELECT * FROM orders ORDER BY tarih DESC');
-        
-        // Tablodaki snake_case (musteri_ad) sütunlarını, front-end'in beklediği camelCase formata çeviriyoruz
+
         const formatliSiparisler = result.rows.map(row => ({
             id: row.id,
             tarih: row.tarih,
@@ -185,7 +210,7 @@ app.get('/api/siparisler', async (req, res) => {
             toplamTutar: row.toplam_tutar,
             durum: row.durum
         }));
-        
+
         res.json(formatliSiparisler);
     } catch (err) {
         res.status(500).json({ mesaj: "Siparişler okunamadı" });
@@ -194,7 +219,7 @@ app.get('/api/siparisler', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`=================================`);
-    console.log(`🚀 KAVRULMUŞ BACKEND (POSTGRESQL) AKTİF!`);
+    console.log(`🚀 KAVRULMUŞ BACKEND (POSTGRESQL + GÜVENLİ ADMIN) AKTİF!`);
     console.log(`🌍 Sunucu adresi: http://localhost:${PORT}`);
     console.log(`=================================`);
 });
