@@ -31,9 +31,25 @@
         .status-badge { background: #d4af37; color: #111; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         .detail-btn { background: transparent; color: #d4af37; border: 1px solid #d4af37; padding: 6px 12px; cursor: pointer; border-radius: 5px; transition: 0.3s; }
         .detail-btn:hover { background: #d4af37; color: #111; }
+
+        /* --- LOGIN OVERLAY --- */
+        #login-overlay { position: fixed; inset: 0; background: #111; display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        #login-box { background: #1a1a1a; padding: 40px; border-radius: 12px; width: 320px; border: 1px solid #333; }
+        #login-box h2 { color: #d4af37; text-align: center; margin-bottom: 25px; font-size: 1.3rem; }
+        #login-error { color: #ff4d4d; text-align: center; margin-top: 15px; font-size: 0.9rem; min-height: 20px; }
     </style>
 </head>
 <body>
+
+    <!-- LOGIN OVERLAY: token yoksa bu ekran görünür, panel arkada gizli kalır -->
+    <div id="login-overlay">
+        <div id="login-box">
+            <h2>🔒 Patron Girişi</h2>
+            <input type="password" id="admin-pass-input" placeholder="Admin şifresi">
+            <button class="submit-btn" onclick="adminLogin()">Giriş Yap</button>
+            <p id="login-error"></p>
+        </div>
+    </div>
 
     <div class="sidebar">
         <h2>KAVRULMUŞ<br><span style="font-size:12px; color:#888; letter-spacing:1px;">PATRON PANELİ</span></h2>
@@ -78,6 +94,55 @@
     <script>
         let globalOrdersList = [];
 
+        // --- GİRİŞ / TOKEN YÖNETİMİ ---
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                document.getElementById('login-overlay').style.display = 'flex';
+            } else {
+                document.getElementById('login-overlay').style.display = 'none';
+            }
+        }
+
+        async function adminLogin() {
+            const passInput = document.getElementById('admin-pass-input');
+            const errorEl = document.getElementById('login-error');
+            errorEl.textContent = '';
+
+            try {
+                const res = await fetch('/api/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: passInput.value })
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorEl.textContent = data.mesaj || 'Giriş başarısız!';
+                    return;
+                }
+
+                localStorage.setItem('adminToken', data.token);
+                document.getElementById('login-overlay').style.display = 'none';
+                passInput.value = '';
+            } catch (err) {
+                errorEl.textContent = 'Sunucuya bağlanılamadı.';
+            }
+        }
+
+        // Enter tuşuyla da giriş yapılabilsin
+        document.getElementById('admin-pass-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') adminLogin();
+        });
+
+        function handleAuthError(status) {
+            if (status === 401 || status === 403) {
+                localStorage.removeItem('adminToken');
+                document.getElementById('login-overlay').style.display = 'flex';
+                document.getElementById('login-error').textContent = 'Oturum sona erdi, tekrar giriş yap.';
+            }
+        }
+
         function switchTab(tabId) {
             document.querySelectorAll('.panel-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -88,7 +153,7 @@
             if(tabId === 'tab-siparisler') fetchOrders();
         }
 
-        // ÜRÜN EKLEME (STOK EKLENDİ)
+        // ÜRÜN EKLEME (STOK EKLENDİ) — artık token ile
         document.getElementById('admin-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const baslik = document.getElementById('baslik').value;
@@ -96,13 +161,22 @@
             const fiyat = document.getElementById('fiyat').value;
             const resimUrl = document.getElementById('resimUrl').value;
             const stok = document.getElementById('stok').value;
+            const token = localStorage.getItem('adminToken');
 
             try {
                 const response = await fetch('/api/urunler', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify({ baslik, tur, fiyat, resimUrl, stok })
                 });
+
+                if (response.status === 401 || response.status === 403) {
+                    handleAuthError(response.status);
+                    return;
+                }
                 
                 const data = await response.json();
                 document.getElementById('admin-mesaj').innerText = `✅ ${data.mesaj}`;
@@ -114,15 +188,23 @@
             }
         });
 
-        // SİPARİŞLERİ ÇEKME
+        // SİPARİŞLERİ ÇEKME — artık token ile
         async function fetchOrders() {
             const tbody = document.getElementById('orders-tbody');
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 30px;">Veriler yükleniyor...</td></tr>';
+            const token = localStorage.getItem('adminToken');
             
             try {
-                const response = await fetch('/api/siparisler');
+                const response = await fetch('/api/siparisler', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 
                 if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        handleAuthError(response.status);
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 30px; color:#888;">Giriş yapman gerekiyor.</td></tr>';
+                        return;
+                    }
                     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#ff4d4d; padding: 20px;">Sunucu Hatası (Kod: ${response.status}).</td></tr>`;
                     return;
                 }
@@ -177,6 +259,9 @@
                 `💰 TOPLAM TUTAR: ${selectedOrder.toplamTutar} TL`
             );
         }
+
+        // Sayfa yüklenince giriş kontrolü yap
+        checkAuth();
     </script>
 </body>
 </html>
