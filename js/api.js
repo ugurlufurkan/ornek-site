@@ -39,9 +39,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <a href="urun-detay.html?id=${urun.id}">
                         <img src="${urun.resim}" alt="${urun.baslik}" class="product-img" style="${isTukendi ? 'filter: grayscale(100%);' : ''}">
                     </a>
-                    <div class="quick-view-overlay" data-id="${urun.id}">
-                        <button class="btn-premium secondary">🔍 Ürünü İncele</button>
-                    </div>
+                    <div class="quick-view-overlay">
+                    <a href="urun-detay.html?id=${urun.id}" class="btn-premium secondary">
+                       🔍 Ürünü İncele
+                    </a>
+                 </div>
                 </div>
                 <div class="card-content">
                     <a href="urun-detay.html?id=${urun.id}" class="product-title-link">
