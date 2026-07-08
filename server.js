@@ -72,7 +72,7 @@ const pool = new Pool({
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT,
+    port: parseInt(process.env.DB_PORT, 10) || 5432,
 });
 
 app.get('/api/health', async (req, res) => {
@@ -295,7 +295,8 @@ app.get('/api/urunler', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM products ORDER BY id ASC');
         res.json(result.rows);
-    } catch {
+    } catch (err) {
+        console.error('GET /api/urunler hatası:', err.message);
         res.status(500).json({ mesaj: 'Ürünler okuma hatası' });
     }
 });

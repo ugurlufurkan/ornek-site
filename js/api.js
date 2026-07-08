@@ -111,14 +111,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     showSkeleton(parseInt(productsGrid.dataset.limit, 10) || 6);
 
+    if (window.location.protocol === 'file:') {
+        productsGrid.innerHTML = '<p style="color:#888;text-align:center;width:100%;padding:20px;">Siteyi <strong>http://localhost:3000</strong> adresinden açın.<br><small>(HTML dosyasına çift tıklamayın — <code>npm start</code> gerekir)</small></p>';
+        return;
+    }
+
     try {
         const response = await fetch('/api/urunler');
-        allProducts = await response.json();
+        const data = await response.json();
+
+        if (!response.ok || !Array.isArray(data)) {
+            const mesaj = data?.mesaj || `Sunucu hatası (${response.status})`;
+            throw new Error(mesaj);
+        }
+
+        allProducts = data;
         populateTurFilter(allProducts);
         applyFilters();
     } catch (error) {
         console.error('Ürünler çekilemedi:', error);
-        productsGrid.innerHTML = '<p style="color:#888;">Ürünler yüklenemedi.</p>';
+        productsGrid.innerHTML = `<p style="color:#888;text-align:center;width:100%;padding:20px;">Ürünler yüklenemedi.<br><small>${error.message || 'Veritabanı bağlantısını kontrol edin.'}</small><br><small>Docker: <code>docker compose up -d veritabani</code> · Sunucu: <code>npm start</code></small></p>`;
     }
 
     ['product-search', 'filter-tur', 'sort-price', 'filter-stok'].forEach(id => {

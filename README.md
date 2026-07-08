@@ -22,9 +22,9 @@ Aksaray merkezli kahve markası için full-stack demo e-ticaret projesi. Express
 # 1. Bağımlılıklar
 npm install
 
-# 2. Ortam değişkenleri
-copy .env.example .env
-# .env dosyasını düzenleyin (DB şifresi, JWT_SECRET, ADMIN_PASSWORD)
+# 2. Ortam değişkenleri — DİKKAT: mevcut .env varsa ÜZERİNE YAZMAYIN
+#    Sadece ilk kurulumda: copy .env.example .env
+#    DB_PASSWORD docker volume ile aynı kalmalı (değiştirmek için: docker compose down -v)
 
 # 3. Veritabanı
 docker compose up -d veritabani
@@ -32,11 +32,19 @@ docker compose up -d veritabani
 # 4. Örnek ürünler (ilk kurulumda)
 npm run seed
 
-# 5. Sunucu
+# 5. Sunucu — .env değiştirdiyseniz önce Ctrl+C ile durdurup yeniden başlatın
 npm start
 ```
 
-Tarayıcı: **http://localhost:3000**
+Tarayıcı: **http://localhost:3000** (HTML dosyasına çift tıklamayın)
+
+### Ürünler görünmüyorsa
+
+1. Docker açık mı? `docker compose up -d veritabani`
+2. `.env` içindeki `DB_PASSWORD`, Postgres volume ile uyumlu mu?
+3. Eski node süreci kalmış olabilir — terminalde `Ctrl+C`, gerekirse Görev Yöneticisi'nden `node.exe` kapatın
+4. `npm run seed` ile ürünleri yükleyin
+5. **http://localhost:3000/urunler.html** adresinden açın
 
 ## Docker ile Tam Stack
 
