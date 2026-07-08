@@ -31,8 +31,16 @@
         .status-badge { background: #d4af37; color: #111; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
         .detail-btn { background: transparent; color: #d4af37; border: 1px solid #d4af37; padding: 6px 12px; cursor: pointer; border-radius: 5px; transition: 0.3s; }
         .detail-btn:hover { background: #d4af37; color: #111; }
-
-        /* --- LOGIN OVERLAY --- */
+        .action-btn { padding: 6px 10px; margin-right: 6px; border-radius: 5px; cursor: pointer; font-size: 0.8rem; border: 1px solid #444; background: #222; color: #fff; }
+        .action-btn.edit { border-color: #d4af37; color: #d4af37; }
+        .action-btn.delete { border-color: #ff4d4d; color: #ff4d4d; }
+        .action-btn:hover { opacity: 0.85; }
+        select.status-select { padding: 8px 10px; background: #0a0a0a; color: #fff; border: 1px solid #444; border-radius: 6px; font-family: 'Poppins'; }
+        select.status-select option { background: #1a1a1a; color: #fff; }
+        .product-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+        .msg-preview { max-width: 280px; color: #aaa; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         #login-overlay { position: fixed; inset: 0; background: #111; display: flex; align-items: center; justify-content: center; z-index: 9999; }
         #login-box { background: #1a1a1a; padding: 40px; border-radius: 12px; width: 320px; border: 1px solid #333; }
         #login-box h2 { color: #d4af37; text-align: center; margin-bottom: 25px; font-size: 1.3rem; }
@@ -53,23 +61,39 @@
 
     <div class="sidebar">
         <h2>KAVRULMUŞ<br><span style="font-size:12px; color:#888; letter-spacing:1px;">PATRON PANELİ</span></h2>
-        <button class="nav-btn active" onclick="switchTab('tab-urunler')">📦 Yeni Ürün Ekle</button>
-        <button class="nav-btn" onclick="switchTab('tab-siparisler')">📋 Sipariş Yönetimi</button>
+        <button class="nav-btn active" onclick="switchTab('tab-urunler', this)">📦 Ürün Yönetimi</button>
+        <button class="nav-btn" onclick="switchTab('tab-siparisler', this)">📋 Sipariş Yönetimi</button>
+        <button class="nav-btn" onclick="switchTab('tab-mesajlar', this)">✉️ İletişim Mesajları</button>
         <a href="index.html" style="color:#d4af37; text-decoration:none; display:block; margin-top:80px; text-align:center; font-size:0.9rem;">← Mağazaya Dön</a>
     </div>
 
     <div class="content">
         <div id="tab-urunler" class="panel-section active">
-            <h2 style="color:#d4af37; margin-bottom: 30px; font-size: 2rem;">Vitrine Kahve Ekle</h2>
-            <form id="admin-form" style="max-width: 600px;">
-                <input type="text" id="baslik" placeholder="Kahve Adı (Örn: Guatemala Antigua)" required>
-                <input type="text" id="tur" placeholder="Türü (Örn: Yöresel Filtre)" required>
-                <input type="number" id="fiyat" placeholder="Fiyat (TL)" required>
-                <input type="text" id="resimUrl" placeholder="Görsel Linki (URL)" required>
-                <input type="number" id="stok" placeholder="Stok Adedi (Örn: 25)" required>
-                <button type="submit" class="submit-btn">+ Vitrine Ekle</button>
-            </form>
-            <div id="admin-mesaj" style="margin-top:20px; color:#d4af37; font-weight:bold;"></div>
+            <div class="two-col">
+                <div>
+                    <h2 style="color:#d4af37; margin-bottom: 30px; font-size: 2rem;" id="form-title">Vitrine Kahve Ekle</h2>
+                    <form id="admin-form" style="max-width: 600px;">
+                        <input type="hidden" id="edit-id">
+                        <input type="text" id="baslik" placeholder="Kahve Adı (Örn: Guatemala Antigua)" required>
+                        <input type="text" id="tur" placeholder="Türü (Örn: Yöresel Filtre)" required>
+                        <input type="number" id="fiyat" placeholder="Fiyat (TL)" required>
+                        <input type="text" id="resimUrl" placeholder="Görsel Linki (URL)" required>
+                        <input type="number" id="stok" placeholder="Stok Adedi (Örn: 25)" required>
+                        <button type="submit" class="submit-btn" id="submit-btn">+ Vitrine Ekle</button>
+                        <button type="button" class="submit-btn" id="cancel-edit-btn" style="display:none; margin-top:10px; background:#333; color:#fff;" onclick="resetProductForm()">İptal</button>
+                    </form>
+                    <div id="admin-mesaj" style="margin-top:20px; color:#d4af37; font-weight:bold;"></div>
+                </div>
+                <div>
+                    <h2 style="color:#d4af37; margin-bottom: 20px; font-size: 1.5rem;">Mevcut Ürünler</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Ürün</th><th>Tür</th><th>Fiyat</th><th>Stok</th><th>İşlem</th></tr>
+                        </thead>
+                        <tbody id="products-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
         <div id="tab-siparisler" class="panel-section">
@@ -89,26 +113,33 @@
                 </tbody>
             </table>
         </div>
+
+        <div id="tab-mesajlar" class="panel-section">
+            <h2 style="color:#d4af37; margin-bottom: 30px; font-size: 2rem;">İletişim Mesajları</h2>
+            <table>
+                <thead>
+                    <tr><th>Tarih</th><th>Gönderen</th><th>Konu</th><th>Mesaj</th></tr>
+                </thead>
+                <tbody id="messages-tbody"></tbody>
+            </table>
+        </div>
     </div>
 
     <script>
         let globalOrdersList = [];
+        let globalProductsList = [];
+        const ORDER_STATUSES = ['Hazırlanıyor', 'Kargoda', 'Teslim Edildi', 'İptal'];
 
-        // --- GİRİŞ / TOKEN YÖNETİMİ ---
         function checkAuth() {
             const token = localStorage.getItem('adminToken');
-            if (!token) {
-                document.getElementById('login-overlay').style.display = 'flex';
-            } else {
-                document.getElementById('login-overlay').style.display = 'none';
-            }
+            document.getElementById('login-overlay').style.display = token ? 'none' : 'flex';
+            if (token) fetchProducts();
         }
 
         async function adminLogin() {
             const passInput = document.getElementById('admin-pass-input');
             const errorEl = document.getElementById('login-error');
             errorEl.textContent = '';
-
             try {
                 const res = await fetch('/api/admin/login', {
                     method: 'POST',
@@ -116,21 +147,19 @@
                     body: JSON.stringify({ password: passInput.value })
                 });
                 const data = await res.json();
-
                 if (!res.ok) {
                     errorEl.textContent = data.mesaj || 'Giriş başarısız!';
                     return;
                 }
-
                 localStorage.setItem('adminToken', data.token);
                 document.getElementById('login-overlay').style.display = 'none';
                 passInput.value = '';
-            } catch (err) {
+                fetchProducts();
+            } catch {
                 errorEl.textContent = 'Sunucuya bağlanılamadı.';
             }
         }
 
-        // Enter tuşuyla da giriş yapılabilsin
         document.getElementById('admin-pass-input').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') adminLogin();
         });
@@ -143,109 +172,204 @@
             }
         }
 
-        function switchTab(tabId) {
+        function switchTab(tabId, btn) {
             document.querySelectorAll('.panel-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
-            if (event && event.target) event.target.classList.add('active');
-            
-            if(tabId === 'tab-siparisler') fetchOrders();
+            if (btn) btn.classList.add('active');
+            if (tabId === 'tab-siparisler') fetchOrders();
+            if (tabId === 'tab-urunler') fetchProducts();
+            if (tabId === 'tab-mesajlar') fetchMessages();
         }
 
-        // ÜRÜN EKLEME (STOK EKLENDİ) — artık token ile
-        document.getElementById('admin-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const baslik = document.getElementById('baslik').value;
-            const tur = document.getElementById('tur').value;
-            const fiyat = document.getElementById('fiyat').value;
-            const resimUrl = document.getElementById('resimUrl').value;
-            const stok = document.getElementById('stok').value;
+        function resetProductForm() {
+            document.getElementById('admin-form').reset();
+            document.getElementById('edit-id').value = '';
+            document.getElementById('form-title').textContent = 'Vitrine Kahve Ekle';
+            document.getElementById('submit-btn').textContent = '+ Vitrine Ekle';
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+        }
+
+        window.editProduct = function(id) {
+            const p = globalProductsList.find(x => x.id === id);
+            if (!p) return;
+            document.getElementById('edit-id').value = p.id;
+            document.getElementById('baslik').value = p.baslik;
+            document.getElementById('tur').value = p.tur;
+            document.getElementById('fiyat').value = p.fiyat;
+            document.getElementById('resimUrl').value = p.resim;
+            document.getElementById('stok').value = p.stok;
+            document.getElementById('form-title').textContent = 'Ürünü Düzenle';
+            document.getElementById('submit-btn').textContent = '💾 Değişiklikleri Kaydet';
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.deleteProduct = async function(id) {
+            if (!confirm('Bu ürünü silmek istediğinize emin misiniz?')) return;
             const token = localStorage.getItem('adminToken');
-
             try {
-                const response = await fetch('/api/urunler', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ baslik, tur, fiyat, resimUrl, stok })
+                const res = await fetch(`/api/urunler/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
+                if (res.status === 401 || res.status === 403) return handleAuthError(res.status);
+                const data = await res.json();
+                document.getElementById('admin-mesaj').innerText = res.ok ? `✅ ${data.mesaj}` : `❌ ${data.mesaj}`;
+                if (res.ok) { resetProductForm(); fetchProducts(); }
+            } catch {
+                document.getElementById('admin-mesaj').innerText = '❌ Sunucu hatası!';
+            }
+        };
 
-                if (response.status === 401 || response.status === 403) {
-                    handleAuthError(response.status);
+        async function fetchProducts() {
+            const tbody = document.getElementById('products-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;">Yükleniyor...</td></tr>';
+            try {
+                const res = await fetch('/api/urunler');
+                const products = await res.json();
+                globalProductsList = Array.isArray(products) ? products : [];
+                if (!globalProductsList.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:20px;">Henüz ürün yok.</td></tr>';
                     return;
                 }
-                
+                tbody.innerHTML = globalProductsList.map(p => `
+                    <tr>
+                        <td><img src="${p.resim}" class="product-thumb" alt=""> ${p.baslik}</td>
+                        <td>${p.tur}</td>
+                        <td style="color:#d4af37;">${p.fiyat} TL</td>
+                        <td>${p.stok}</td>
+                        <td>
+                            <button class="action-btn edit" onclick="editProduct(${p.id})">Düzenle</button>
+                            <button class="action-btn delete" onclick="deleteProduct(${p.id})">Sil</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#ff4d4d;">Ürünler yüklenemedi.</td></tr>';
+            }
+        }
+
+        document.getElementById('admin-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('edit-id').value;
+            const payload = {
+                baslik: document.getElementById('baslik').value,
+                tur: document.getElementById('tur').value,
+                fiyat: document.getElementById('fiyat').value,
+                resimUrl: document.getElementById('resimUrl').value,
+                stok: document.getElementById('stok').value
+            };
+            const token = localStorage.getItem('adminToken');
+            const isEdit = !!editId;
+            try {
+                const response = await fetch(isEdit ? `/api/urunler/${editId}` : '/api/urunler', {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(payload)
+                });
+                if (response.status === 401 || response.status === 403) return handleAuthError(response.status);
                 const data = await response.json();
-                document.getElementById('admin-mesaj').innerText = `✅ ${data.mesaj}`;
-                if(response.ok) document.getElementById('admin-form').reset();
-                
+                document.getElementById('admin-mesaj').innerText = response.ok ? `✅ ${data.mesaj}` : `❌ ${data.mesaj}`;
+                if (response.ok) { resetProductForm(); fetchProducts(); }
                 setTimeout(() => { document.getElementById('admin-mesaj').innerText = ''; }, 3000);
-            } catch (err) {
+            } catch {
                 document.getElementById('admin-mesaj').innerText = '❌ Sunucu hatası!';
             }
         });
 
-        // SİPARİŞLERİ ÇEKME — artık token ile
         async function fetchOrders() {
             const tbody = document.getElementById('orders-tbody');
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 30px;">Veriler yükleniyor...</td></tr>';
             const token = localStorage.getItem('adminToken');
-            
             try {
-                const response = await fetch('/api/siparisler', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                
+                const response = await fetch('/api/siparisler', { headers: { 'Authorization': `Bearer ${token}` } });
                 if (!response.ok) {
                     if (response.status === 401 || response.status === 403) {
                         handleAuthError(response.status);
                         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 30px; color:#888;">Giriş yapman gerekiyor.</td></tr>';
                         return;
                     }
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#ff4d4d; padding: 20px;">Sunucu Hatası (Kod: ${response.status}).</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#ff4d4d; padding: 20px;">Sunucu Hatası.</td></tr>`;
                     return;
                 }
-
                 const orders = await response.json();
-                
-                if(!Array.isArray(orders) || orders.length === 0) {
+                if (!Array.isArray(orders) || orders.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 30px; color:#888;">Henüz hiç sipariş alınmadı.</td></tr>';
                     return;
                 }
-
                 globalOrdersList = orders;
-
-                tbody.innerHTML = orders.slice().reverse().map(order => {
+                tbody.innerHTML = orders.map(order => {
                     const date = new Date(order.tarih).toLocaleString('tr-TR');
-
+                    const statusOptions = ORDER_STATUSES.map(s =>
+                        `<option value="${s}" ${s === order.durum ? 'selected' : ''}>${s}</option>`
+                    ).join('');
                     return `
                         <tr>
                             <td><strong style="color:#fff;">${order.id}</strong></td>
-                            <td>
-                                <span style="color:#fff;">${order.musteriAd}</span><br>
-                                <span style="font-size:12px; color:#888;">${order.telefon}</span>
-                            </td>
-                            <td style="font-size:14px; color:#ccc;">${date}</td>
+                            <td><span style="color:#fff;">${order.musteriAd}</span><br><span style="font-size:12px;color:#888;">${order.telefon}</span></td>
+                            <td style="font-size:14px;color:#ccc;">${date}</td>
                             <td><strong style="color:#d4af37;">${order.toplamTutar} TL</strong></td>
-                            <td><span class="status-badge">${order.durum}</span></td>
                             <td>
-                                <button class="detail-btn" onclick="showOrderDetails('${order.id}')">Detay Gör</button>
+                                <select class="status-select" onchange="updateOrderStatus('${order.id}', this.value)">${statusOptions}</select>
                             </td>
-                        </tr>
-                    `;
+                            <td><button class="detail-btn" onclick="showOrderDetails('${order.id}')">Detay</button></td>
+                        </tr>`;
                 }).join('');
-            } catch (error) {
+            } catch {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:#ff4d4d; padding: 20px;">Siparişler işlenirken hata oluştu.</td></tr>';
+            }
+        }
+
+        window.updateOrderStatus = async function(orderId, durum) {
+            const token = localStorage.getItem('adminToken');
+            try {
+                const res = await fetch(`/api/siparisler/${orderId}/durum`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ durum })
+                });
+                if (res.status === 401 || res.status === 403) return handleAuthError(res.status);
+                const data = await res.json();
+                if (!res.ok) alert(data.mesaj || 'Durum güncellenemedi.');
+                else {
+                    const o = globalOrdersList.find(x => x.id === orderId);
+                    if (o) o.durum = durum;
+                }
+            } catch {
+                alert('Sunucu hatası.');
+            }
+        };
+
+        async function fetchMessages() {
+            const tbody = document.getElementById('messages-tbody');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:20px;">Yükleniyor...</td></tr>';
+            const token = localStorage.getItem('adminToken');
+            try {
+                const res = await fetch('/api/iletisim', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.status === 401 || res.status === 403) return handleAuthError(res.status);
+                const messages = await res.json();
+                if (!Array.isArray(messages) || !messages.length) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888;padding:20px;">Henüz mesaj yok.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = messages.map(m => `
+                    <tr>
+                        <td style="font-size:13px;color:#aaa;">${new Date(m.tarih).toLocaleString('tr-TR')}</td>
+                        <td><strong>${m.ad_soyad}</strong><br><span style="font-size:12px;color:#888;">${m.email}</span></td>
+                        <td>${m.konu}</td>
+                        <td><span class="msg-preview" title="${m.mesaj.replace(/"/g, '&quot;')}">${m.mesaj}</span></td>
+                    </tr>
+                `).join('');
+            } catch {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ff4d4d;">Mesajlar yüklenemedi.</td></tr>';
             }
         }
 
         window.showOrderDetails = function(orderId) {
             const selectedOrder = globalOrdersList.find(o => o.id === orderId);
-            if (!selectedOrder) return alert("Sipariş detayları bulunamadı!");
-
+            if (!selectedOrder) return alert('Sipariş detayları bulunamadı!');
             const urunOzeti = selectedOrder.urunler.map(u => `${u.quantity}x ${u.title}`).join('\n');
             alert(
                 `📋 SİPARİŞ RAPORU (#${selectedOrder.id})\n` +
@@ -253,14 +377,14 @@
                 `👤 Müşteri: ${selectedOrder.musteriAd}\n` +
                 `📞 Telefon: ${selectedOrder.telefon}\n` +
                 `📧 Hesap: ${selectedOrder.userEmail}\n` +
-                `💳 Ödeme: ${selectedOrder.odemeYontemi === 'card' ? 'Kredi/Banka Kartı' : 'Kapıda Ödeme'}\n\n` +
+                `💳 Ödeme: ${selectedOrder.odemeYontemi === 'card' ? 'Kredi/Banka Kartı' : 'Kapıda Ödeme'}\n` +
+                `📦 Durum: ${selectedOrder.durum}\n\n` +
                 `📍 TESLİMAT ADRESİ:\n${selectedOrder.adres}\n\n` +
                 `☕ SİPARİŞ EDİLENLER:\n${urunOzeti}\n\n` +
                 `💰 TOPLAM TUTAR: ${selectedOrder.toplamTutar} TL`
             );
-        }
+        };
 
-        // Sayfa yüklenince giriş kontrolü yap
         checkAuth();
     </script>
 </body>

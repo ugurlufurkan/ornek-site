@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/account.css">
+    <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/account-menu.css">
 </head>
@@ -90,6 +91,17 @@
         </div>
     </main>
 
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <aside class="cart-sidebar" id="cart-sidebar">
+        <div class="cart-header"><h2>Sepetiniz</h2><button class="close-cart" id="close-cart">✕</button></div>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="cart-footer">
+            <div class="cart-total-box"><span>Ara Toplam:</span><span><span id="cart-total">0.00</span> TL</span></div>
+            <button class="btn-premium primary checkout-btn" id="go-to-checkout">Siparişi Tamamla</button>
+        </div>
+    </aside>
+    <div id="toast-container" class="toast-container"></div>
+
     <div class="modal-overlay" id="auth-modal">
         <div class="modal-box">
             <span class="close-modal" id="close-auth">&times;</span>
@@ -111,11 +123,40 @@
             </form>
         </div>
     </div>
-    <div id="toast-container" class="toast-container"></div>
+
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-box" style="max-width: 500px;">
+            <span class="close-modal close-modal-btn">&times;</span>
+            <h2 style="color:var(--gold-accent); margin-bottom:20px;">Güvenli Ödeme</h2>
+            <form id="checkout-form" class="modal-form active">
+                <input type="text" id="checkout-name" placeholder="Ad Soyad" required>
+                <input type="tel" id="checkout-phone" placeholder="Telefon (05XX...)" required>
+                <textarea id="checkout-address" rows="3" placeholder="Teslimat Adresi" required></textarea>
+                <select id="odeme-yontemi-select" required>
+                    <option value="">Ödeme Yöntemi Seçin</option>
+                    <option value="card">Kredi/Banka Kartı</option>
+                    <option value="door">Kapıda Ödeme</option>
+                </select>
+                <button type="submit" class="btn-premium primary" style="width:100%; margin-top:10px;">Siparişi Onayla</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="tracking-modal">
+        <div class="modal-box" style="max-width: 500px;">
+            <span class="close-modal close-modal-btn">&times;</span>
+            <h2 style="color:var(--gold-accent); margin-bottom:10px;">Siparişiniz Alındı!</h2>
+            <p style="margin-bottom:20px; color:#999;">Takip numaranız: <strong id="tracking-order-no">#KVR-0000</strong></p>
+            <div class="progress-bar-bg"><div class="progress-fill" id="track-progress"></div></div>
+        </div>
+    </div>
+
     <script src="js/toast.js"></script>
+    <script src="js/cart.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/favorites.js"></script>
     <script src="js/account.js"></script>
+    <script src="js/tracking.js"></script>
     <script>
         document.getElementById('open-auth-login')?.addEventListener('click', () => {
             document.getElementById('auth-modal').classList.add('active');

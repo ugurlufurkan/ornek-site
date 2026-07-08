@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İletişim | Kavrulmuş</title>
+    <title>Blog | Kavrulmuş</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/pages.css">
-    <link rel="stylesheet" href="css/contact.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <link rel="stylesheet" href="css/blog-article.css">
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/footer.css">
@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
-
     <nav class="navbar" id="navbar">
         <div class="nav-brand">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>
@@ -29,8 +28,8 @@
             <li><a href="index.html">Anasayfa</a></li>
             <li><a href="hakkimizda.html">Hakkımızda</a></li>
             <li><a href="urunler.html">Ürünlerimiz</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="iletisim.html" style="color: var(--gold-accent);">İletişim</a></li>
+            <li><a href="blog.html" style="color: var(--gold-accent);">Blog</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
         </ul>
         <div class="nav-actions">
             <button id="theme-toggle" class="btn-text" title="Tema değiştir">☀️</button>
@@ -43,106 +42,31 @@
                 </div>
             </div>
             <a href="favoriler.html" class="nav-icon favorite-nav">❤️<span class="favorite-count" id="favorite-count">0</span></a>
-            <button class="btn-premium cart-btn" id="cart-icon">
-                🛒 Sepet (<span id="cart-count">0</span>)
-            </button>
+            <button class="btn-premium cart-btn" id="cart-icon">🛒 Sepet (<span id="cart-count">0</span>)</button>
         </div>
     </nav>
 
-    <header class="page-header">
-        <h1>Bizimle İletişime Geçin</h1>
-        <p>Siparişleriniz, toptan alımlarınız veya sadece bir fincan kahve içip sohbet etmek için her zaman buradayız.</p>
-    </header>
+    <div id="article-not-found" style="display:none; text-align:center; padding:160px 5% 80px;">
+        <h1 style="color:var(--gold-accent); margin-bottom:15px;">Yazı Bulunamadı</h1>
+        <p style="color:#888; margin-bottom:25px;">Aradığınız blog yazısı mevcut değil.</p>
+        <a href="blog.html" class="btn-premium primary">← Blog'a Dön</a>
+    </div>
 
-    <section class="contact-section">
-        <div class="contact-grid">
-            
-            <div class="contact-info-wrapper">
-                <div class="info-card">
-                    <div class="info-icon">📍</div>
-                    <div class="info-details">
-                        <h3>Atölye & Mağaza</h3>
-                        <p>Kafeler Caddesi No:45<br>Aksaray Merkez, Türkiye</p>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-icon">📞</div>
-                    <div class="info-details">
-                        <h3>Bize Ulaşın</h3>
-                        <p>Tel: +90 (555) 123 45 67<br>E-Posta: info@kavrulmus.com</p>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <div class="info-icon">🕒</div>
-                    <div class="info-details">
-                        <h3>Çalışma Saatleri</h3>
-                        <p>Hafta içi: 09.00 - 23.00<br>Hafta sonu: 10.00 - 00.00</p>
-                    </div>
-                </div>
-
-                <div class="map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d100000!2d33.95!3d38.36!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzjCsDIxJzM2LjAiTiAzM8KwNTcnMDAuMCJF!5e0!3m2!1str!2str!4v1620000000000!5m2!1str!2str" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-            </div>
-
-            <div class="contact-form-wrapper">
-                <h2>Mesaj Gönder</h2>
-                <p>Sorularınız veya işbirlikleri için formu doldurun, en kısa sürede dönüş yapalım.</p>
-                
-                <form class="contact-form" id="contact-form">
-                    <div class="form-group">
-                        <label>Adınız Soyadınız</label>
-                        <input type="text" id="contact-name" placeholder="Örn: Ahmet Yılmaz" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>E-Posta Adresiniz</label>
-                        <input type="email" id="contact-email" placeholder="Örn: ahmet@mail.com" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Konu</label>
-                        <input type="text" id="contact-subject" placeholder="Hangi konuda yardımcı olabiliriz?" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Mesajınız</label>
-                        <textarea id="contact-message" rows="5" placeholder="Mesajınızı buraya yazın..." required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn-premium primary" style="margin-top: 10px; font-size: 1.1rem; padding: 15px;">Mesajı Gönder</button>
-                </form>
-            </div>
-
+    <article id="article-content" class="article-page">
+        <header class="article-header">
+            <a href="blog.html" class="back-link">← Tüm Yazılar</a>
+            <span class="blog-category" id="article-category">Kategori</span>
+            <h1 id="article-title">Yükleniyor...</h1>
+            <p class="article-meta" id="article-meta"></p>
+        </header>
+        <div class="article-hero">
+            <img id="article-image" src="" alt="" class="article-hero-img">
         </div>
-    </section>
+        <div class="article-body" id="article-body"></div>
+    </article>
 
     <footer class="premium-footer">
-        <div class="footer-grid">
-            <div class="footer-col footer-brand">
-                <h2>Kavrulmuş<span>.</span></h2>
-                <p>Aksaray Merkez'in 3. nesil kahve deneyimi. Çekirdekten fincana uzanan bu premium lezzet serüvenine ortak olun.</p>
-            </div>
-            <div class="footer-col">
-                <h3>Keşfet</h3>
-                <ul class="footer-links">
-                    <li><a href="hakkimizda.html">Hikayemiz</a></li>
-                    <li><a href="urunler.html">Menü & Sipariş</a></li>
-                    <li><a href="blog.html">Kahve Rehberi</a></li>
-                    <li><a href="iletisim.html">İletişim</a></li>
-                </ul>
-            </div>
-            <div class="footer-col footer-contact">
-                <h3>İletişim</h3>
-                <p>📍 Kafeler Caddesi No:45, Aksaray</p>
-                <p>📞 +90 (555) 123 45 67</p>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2024 Kavrulmuş Kahve - Tüm hakları saklıdır.</p>
-        </div>
+        <div class="footer-bottom"><p>&copy; 2024 Kavrulmuş Kahve - Tüm hakları saklıdır.</p></div>
     </footer>
 
     <div class="cart-overlay" id="cart-overlay"></div>
@@ -155,7 +79,6 @@
         </div>
     </aside>
     <div id="toast-container" class="toast-container"></div>
-    
     <div class="modal-overlay" id="auth-modal">
         <div class="modal-box">
             <span class="close-modal" id="close-auth">&times;</span>
@@ -167,7 +90,6 @@
                 <input type="email" placeholder="E-Posta Adresiniz" required>
                 <input type="password" placeholder="Şifreniz" required>
                 <button type="submit" class="btn-premium primary" style="width:100%; margin-top:10px;">Giriş Yap</button>
-                <a href="#" id="forgot-password-link" style="text-align:center;color:#888;font-size:0.85rem;margin-top:8px;">Şifremi unuttum</a>
             </form>
             <form id="register-form" class="modal-form">
                 <input type="text" placeholder="Ad Soyad" required>
@@ -178,7 +100,6 @@
             </form>
         </div>
     </div>
-
     <div class="modal-overlay" id="checkout-modal">
         <div class="modal-box" style="max-width: 500px;">
             <span class="close-modal close-modal-btn">&times;</span>
@@ -192,27 +113,16 @@
                     <option value="card">Kredi/Banka Kartı</option>
                     <option value="door">Kapıda Ödeme</option>
                 </select>
-                <div id="card-fields" class="hidden">
-                    <input type="text" id="card-number" placeholder="Kart Numarası" inputmode="numeric" autocomplete="off">
-                    <div style="display:flex; gap:10px;">
-                        <input type="text" id="card-expiry" placeholder="AA/YY" inputmode="numeric" autocomplete="off" style="flex:1;">
-                        <input type="text" id="card-cvv" placeholder="CVV" inputmode="numeric" autocomplete="off" style="flex:1;">
-                    </div>
-                    <p style="font-size:0.75rem; color:#888; margin-top:-10px; margin-bottom:15px;">🔒 Demo ödeme — kart bilgileriniz kaydedilmez.</p>
-                </div>
                 <button type="submit" class="btn-premium primary" style="width:100%; margin-top:10px;">Siparişi Onayla</button>
             </form>
         </div>
     </div>
-
     <div class="modal-overlay" id="tracking-modal">
         <div class="modal-box" style="max-width: 500px;">
             <span class="close-modal close-modal-btn">&times;</span>
             <h2 style="color:var(--gold-accent); margin-bottom:10px;">Siparişiniz Alındı!</h2>
             <p style="margin-bottom:20px; color:#999;">Takip numaranız: <strong id="tracking-order-no">#KVR-0000</strong></p>
-            <div class="progress-bar-bg">
-                <div class="progress-fill" id="track-progress"></div>
-            </div>
+            <div class="progress-bar-bg"><div class="progress-fill" id="track-progress"></div></div>
         </div>
     </div>
 
@@ -223,6 +133,7 @@
     <script src="js/modal.js"></script>
     <script src="js/favorites.js"></script>
     <script src="js/tracking.js"></script>
-    <script src="js/contact.js"></script>
+    <script src="js/blog-data.js"></script>
+    <script src="js/blog-article.js"></script>
 </body>
 </html>

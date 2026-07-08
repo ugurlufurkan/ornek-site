@@ -38,7 +38,15 @@ if (rateLimit) {
     app.use('/api/auth/login', rateLimit({ windowMs: 15 * 60 * 1000, max: 10, message: { mesaj: 'Çok fazla giriş denemesi.' } }));
     app.use('/api/auth/register', rateLimit({ windowMs: 60 * 60 * 1000, max: 5, message: { mesaj: 'Çok fazla kayıt denemesi.' } }));
     app.use('/api/auth/forgot-password', rateLimit({ windowMs: 60 * 60 * 1000, max: 3, message: { mesaj: 'Çok fazla şifre sıfırlama isteği.' } }));
+    app.use('/api/iletisim', rateLimit({ windowMs: 60 * 60 * 1000, max: 10, message: { mesaj: 'Çok fazla mesaj gönderdiniz.' } }));
 }
+
+app.use((req, res, next) => {
+    if (req.path === '/.env' || req.path.startsWith('/.env.')) {
+        return res.status(404).end();
+    }
+    next();
+});
 
 app.use(express.static(__dirname));
 
@@ -195,6 +203,15 @@ const initDB = async () => {
                 expires_at TIMESTAMP NOT NULL,
                 used BOOLEAN DEFAULT FALSE
             );
+            CREATE TABLE IF NOT EXISTS contact_messages (
+                id SERIAL PRIMARY KEY,
+                ad_soyad VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                konu VARCHAR(255) NOT NULL,
+                mesaj TEXT NOT NULL,
+                tarih TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                okundu BOOLEAN DEFAULT FALSE
+            );
         `);
         await pool.query(`
             ALTER TABLE users ADD COLUMN IF NOT EXISTS ad_soyad VARCHAR(255);
@@ -324,6 +341,43 @@ app.post('/api/urunler', verifyAdmin, async (req, res) => {
         res.status(201).json({ mesaj: 'Ürün başarıyla vitrine eklendi!', urun: result.rows[0] });
     } catch {
         res.status(500).json({ mesaj: 'Ürün kaydedilemedi' });
+    }
+});
+
+app.put('/api/urunler/:id', verifyAdmin, async (req, res) => {
+    const { id } = req.params;
+    if (!/^\d+$/.test(id)) return res.status(400).json({ mesaj: 'Geçersiz ürün id.' });
+    const { baslik, tur, fiyat, resimUrl, stok } = req.body;
+    try {
+        const result = await pool.query(
+            'UPDATE products SET baslik = $1, tur = $2, fiyat = $3, resim = $4, stok = $5 WHERE id = $6 RETURNING *',
+            [
+                sanitizeText(baslik, 255) || 'İsimsiz Kahve',
+                sanitizeText(tur, 255) || 'Standart',
+                parseFloat(fiyat) || 0,
+                resimUrl || '',
+                parseInt(stok, 10) || 0,
+                id
+            ]
+        );
+        if (!result.rows.length) return res.status(404).json({ mesaj: 'Ürün bulunamadı.' });
+        res.json({ mesaj: 'Ürün güncellendi.', urun: result.rows[0] });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ mesaj: 'Ürün güncellenemedi.' });
+    }
+});
+
+app.delete('/api/urunler/:id', verifyAdmin, async (req, res) => {
+    const { id } = req.params;
+    if (!/^\d+$/.test(id)) return res.status(400).json({ mesaj: 'Geçersiz ürün id.' });
+    try {
+        const result = await pool.query('DELETE FROM products WHERE id = $1 RETURNING id', [id]);
+        if (!result.rows.length) return res.status(404).json({ mesaj: 'Ürün bulunamadı.' });
+        res.json({ mesaj: 'Ürün silindi.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ mesaj: 'Ürün silinemedi.' });
     }
 });
 
@@ -637,6 +691,71 @@ app.get('/api/siparisler', verifyAdmin, async (req, res) => {
         })));
     } catch {
         res.status(500).json({ mesaj: 'Siparişler okunamadı' });
+    }
+});
+
+app.put('/api/siparisler/:id/durum', verifyAdmin, async (req, res) => {
+    const { id } = req.params;
+    const durum = sanitizeText(req.body.durum, 50);
+    const allowed = ['Hazırlanıyor', 'Kargoda', 'Teslim Edildi', 'İptal'];
+    if (!durum || !allowed.includes(durum)) {
+        return res.status(400).json({ mesaj: 'Geçersiz sipariş durumu.' });
+    }
+    try {
+        const result = await pool.query(
+            'UPDATE orders SET durum = $1 WHERE id = $2 RETURNING id, durum',
+            [durum, id]
+        );
+        if (!result.rows.length) return res.status(404).json({ mesaj: 'Sipariş bulunamadı.' });
+        res.json({ mesaj: 'Sipariş durumu güncellendi.', durum: result.rows[0].durum });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ mesaj: 'Durum güncellenemedi.' });
+    }
+});
+
+// --- İLETİŞİM ---
+app.post('/api/iletisim', async (req, res) => {
+    const adSoyad = sanitizeText(req.body.adSoyad, 255);
+    const email = sanitizeText(req.body.email, 255).toLowerCase();
+    const konu = sanitizeText(req.body.konu, 255);
+    const mesaj = sanitizeText(req.body.mesaj, 2000);
+    if (!adSoyad || !isValidEmail(email) || !konu || !mesaj) {
+        return res.status(400).json({ mesaj: 'Tüm alanları doldurun ve geçerli e-posta girin.' });
+    }
+    try {
+        await pool.query(
+            'INSERT INTO contact_messages (ad_soyad, email, konu, mesaj) VALUES ($1, $2, $3, $4)',
+            [adSoyad, email, konu, mesaj]
+        );
+        await sendMailSafe({
+            from: `"Kavrulmuş İletişim" <${process.env.EMAIL_USER}>`,
+            to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
+            replyTo: email,
+            subject: `İletişim: ${konu}`,
+            html: `
+                <h2>Yeni iletişim mesajı</h2>
+                <p><strong>Gönderen:</strong> ${escapeHtml(adSoyad)} (${escapeHtml(email)})</p>
+                <p><strong>Konu:</strong> ${escapeHtml(konu)}</p>
+                <p>${escapeHtml(mesaj).replace(/\n/g, '<br>')}</p>
+            `
+        });
+        res.status(201).json({ mesaj: 'Mesajınız alındı. En kısa sürede dönüş yapacağız.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ mesaj: 'Mesaj gönderilemedi.' });
+    }
+});
+
+app.get('/api/iletisim', verifyAdmin, async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT id, ad_soyad, email, konu, mesaj, tarih, okundu FROM contact_messages ORDER BY tarih DESC LIMIT 100'
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ mesaj: 'Mesajlar okunamadı.' });
     }
 });
 

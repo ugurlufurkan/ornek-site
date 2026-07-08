@@ -40,6 +40,42 @@ body.light-mode .products-toolbar select {
     background: #fff;
     color: #1A1512;
     border-color: rgba(0, 0, 0, 0.15);
+    color-scheme: light;
+}
+
+body.light-mode .products-toolbar input::placeholder {
+    color: rgba(26, 21, 18, 0.45);
+}
+
+body.light-mode .products-toolbar select option {
+    background-color: #fff;
+    color: #1A1512;
+}
+
+body.light-mode .filter-btn {
+    color: #1A1512;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .filter-btn.active,
+body.light-mode .filter-btn:hover {
+    color: #1A1512;
+}
+
+body.light-mode select,
+body.light-mode .modal-box select {
+    color-scheme: light;
+}
+
+body.light-mode select option,
+body.light-mode .modal-box select option {
+    background-color: #fff;
+    color: #1A1512;
+}
+
+select option {
+    background-color: #1a1512;
+    color: #f2e9e4;
 }
 
 #theme-toggle {
