@@ -83,11 +83,13 @@ const initDB = async () => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                kayit_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            );
+            id SERIAL PRIMARY KEY,
+            ad_soyad VARCHAR(255),
+            telefon VARCHAR(30),
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password TEXT NOT NULL,
+            kayit_tarihi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
             
             CREATE TABLE IF NOT EXISTS products (
                 id SERIAL PRIMARY KEY,
@@ -193,7 +195,7 @@ app.post('/api/urunler', verifyAdmin, async (req, res) => {
 
 // 3. API: YENİ ÜYE KAYDI
 app.post('/api/auth/register', async (req, res) => {
-    const { email, password } = req.body;
+    const { adSoyad, telefon, email, password } = req.body;
     try {
         const checkUser = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         if (checkUser.rows.length > 0) return res.status(400).json({ mesaj: "Bu e-posta zaten kullanımda!" });
@@ -202,34 +204,102 @@ app.post('/api/auth/register', async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const result = await pool.query(
-            'INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id, email',
-            [email, hashedPassword]
-        );
+    `INSERT INTO users
+    (ad_soyad, telefon, email, password)
+    VALUES ($1, $2, $3, $4)
+    RETURNING id, ad_soyad, telefon, email`,
+    [
+        adSoyad,
+        telefon,
+        email,
+        hashedPassword
+    ]
+);
 
-        const yeniKullanici = result.rows[0];
-        const token = jwt.sign({ id: yeniKullanici.id, email: yeniKullanici.email, role: 'customer' }, JWT_SECRET, { expiresIn: '2h' });
-        res.status(201).json({ mesaj: "Kayıt başarıyla tamamlandı!", token, user: { email: yeniKullanici.email } });
-    } catch (err) {
-        res.status(500).json({ mesaj: "Kayıt başarısız" });
+       const yeniKullanici = result.rows[0];
+
+const token = jwt.sign(
+    {
+        id: yeniKullanici.id,
+        name: yeniKullanici.ad_soyad,
+        email: yeniKullanici.email,
+        role: 'customer'
+    },
+    JWT_SECRET,
+    { expiresIn: '2h' }
+);
+
+res.status(201).json({
+    mesaj: "Kayıt başarıyla tamamlandı!",
+    token,
+    user: {
+        name: yeniKullanici.ad_soyad,
+        phone: yeniKullanici.telefon,
+        email: yeniKullanici.email
     }
+});
+
+} catch (err) {
+    console.error(err);
+    res.status(500).json({
+        mesaj: "Kayıt başarısız"
+    });
+}
 });
 
 // 4. API: GİRİŞ YAP
 app.post('/api/auth/login', async (req, res) => {
     const { email, password } = req.body;
+
     try {
-        const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const result = await pool.query(
+            'SELECT * FROM users WHERE email = $1',
+            [email]
+        );
+
         const user = result.rows[0];
 
-        if (!user) return res.status(401).json({ mesaj: "Hatalı e-posta veya şifre!" });
+        if (!user) {
+            return res.status(401).json({
+                mesaj: "Hatalı e-posta veya şifre!"
+            });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ mesaj: "Hatalı e-posta veya şifre!" });
 
-        const token = jwt.sign({ id: user.id, email: user.email, role: 'customer' }, JWT_SECRET, { expiresIn: '2h' });
-        res.status(200).json({ mesaj: "Giriş başarılı, hoş geldin!", token, user: { email: user.email } });
+        if (!isMatch) {
+            return res.status(401).json({
+                mesaj: "Hatalı e-posta veya şifre!"
+            });
+        }
+
+        const token = jwt.sign(
+            {
+                id: user.id,
+                name: user.ad_soyad,
+                phone: user.telefon,
+                email: user.email,
+                role: 'customer'
+            },
+            JWT_SECRET,
+            { expiresIn: '2h' }
+        );
+
+        res.status(200).json({
+            mesaj: "Giriş başarılı, hoş geldin!",
+            token,
+            user: {
+                name: user.ad_soyad,
+                phone: user.telefon,
+                email: user.email
+            }
+        });
+
     } catch (err) {
-        res.status(500).json({ mesaj: "Giriş yapılırken sunucu hatası" });
+        console.error(err);
+        res.status(500).json({
+            mesaj: "Giriş yapılırken sunucu hatası"
+        });
     }
 });
 
