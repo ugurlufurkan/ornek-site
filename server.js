@@ -7,24 +7,45 @@ const fs = require('fs');
 const app = express();
 const PORT = 3000;
 
-// Frontend dosyalarını sun
 app.use(express.static(__dirname));
-
-// Formlardan gelen JSON verilerini okuyabilmek için
 app.use(express.json());
 
 // Veritabanı dosya yolları
+const dataDir = path.join(__dirname, 'data');
 const dbPath = path.join(__dirname, 'data', 'db.json');
 const usersDbPath = path.join(__dirname, 'data', 'users.json');
+
+// =================================================================
+// 🔥 TERMİNATÖR KOD: KLASÖR VE DOSYA YOKSA OTOMATİK YARAT!
+// =================================================================
+// 1. Önce 'data' klasörü var mı kontrol et, yoksa yarat
+if (!fs.existsSync(dataDir)) {
+    fs.mkdirSync(dataDir, { recursive: true });
+    console.log("📁 'data' klasörü bulunamadı, sistem tarafından otomatik oluşturuldu!");
+}
+
+// 2. users.json var mı kontrol et, yoksa içi boş liste olarak yarat
+if (!fs.existsSync(usersDbPath)) {
+    fs.writeFileSync(usersDbPath, '[]', 'utf8');
+    console.log("🛠️ DİKKAT: users.json dosyası bulunamadı, otomatik yaratıldı!");
+}
+
+// 3. db.json var mı kontrol et, yoksa hata vermemesi için onu da yarat
+if (!fs.existsSync(dbPath)) {
+    fs.writeFileSync(dbPath, '[]', 'utf8');
+    console.log("🛠️ DİKKAT: db.json dosyası bulunamadı, otomatik yaratıldı!");
+}
+// =================================================================
 
 // 1. API: Ürünleri Çek (GET)
 app.get('/api/urunler', (req, res) => {
     fs.readFile(dbPath, 'utf8', (err, data) => {
-        if (err) {
-            console.error("Veritabanı okuma hatası:", err);
-            return res.status(500).json({ mesaj: "Veritabanına ulaşılamadı." });
+        if (err) return res.status(500).json({ mesaj: "Ürünler veritabanı okuma hatası" });
+        try {
+            res.json(JSON.parse(data));
+        } catch (error) {
+            res.json([]); // db.json bozuksa sayfayı çökertmek yerine boş liste döner
         }
-        res.json(JSON.parse(data));
     });
 });
 
@@ -32,64 +53,57 @@ app.get('/api/urunler', (req, res) => {
 app.post('/api/auth/register', (req, res) => {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ mesaj: "E-posta ve şifre zorunludur." });
-    }
-
     fs.readFile(usersDbPath, 'utf8', (err, data) => {
-        if (err) return res.status(500).json({ mesaj: "Veritabanı okuma hatası" });
+        if (err) return res.status(500).json({ mesaj: "Veritabanı okuma hatası! Dosya bozuk olabilir." });
+        
+        let kullanicilar = [];
+        try {
+            kullanicilar = JSON.parse(data); // İçerik bozuksa yakala
+        } catch (error) {
+            kullanicilar = []; // Bozuksa listeyi sıfırla
+        }
 
-        const kullanicilar = JSON.parse(data);
-
-        const kayitliMi = kullanicilar.find(u => u.email === email);
-        if (kayitliMi) {
+        if (kullanicilar.find(u => u.email === email)) {
             return res.status(400).json({ mesaj: "Bu e-posta adresi zaten kullanımda!" });
         }
 
-        const yeniKullanici = {
-            id: Date.now(),
-            email: email,
-            password: password, // Not: Gerçek projede bu şifre bcrypt ile hashlenmeli
-            kayitTarihi: new Date().toISOString()
-        };
+        const yeniKullanici = { id: Date.now(), email, password, kayitTarihi: new Date().toISOString() };
         kullanicilar.push(yeniKullanici);
 
         fs.writeFile(usersDbPath, JSON.stringify(kullanicilar, null, 2), (err) => {
             if (err) return res.status(500).json({ mesaj: "Kayıt işlemi başarısız oldu" });
-            res.status(201).json({ mesaj: "Kayıt başarıyla tamamlandı, hoş geldiniz!" });
+            res.status(201).json({ mesaj: "Kayıt başarıyla tamamlandı!", user: { email } });
         });
     });
 });
 
-// 3. YENİ API: Giriş Yap (POST)
+// 3. API: GİRİŞ YAP (LOGIN)
 app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({ mesaj: "E-posta ve şifre zorunludur." });
-    }
-
     fs.readFile(usersDbPath, 'utf8', (err, data) => {
         if (err) return res.status(500).json({ mesaj: "Veritabanı okuma hatası" });
-
-        const kullanicilar = JSON.parse(data);
-
-        // E-posta ve şifre eşleşen kullanıcıyı bul
-        const kullanici = kullanicilar.find(u => u.email === email && u.password === password);
-
-        if (!kullanici) {
-            return res.status(401).json({ mesaj: "E-posta veya şifre hatalı." });
+        
+        let kullanicilar = [];
+        try {
+            kullanicilar = JSON.parse(data);
+        } catch (error) {
+            kullanicilar = [];
         }
 
-        res.status(200).json({ mesaj: `Tekrar hoş geldin, ${email.split('@')[0]}!` });
+        const user = kullanicilar.find(u => u.email === email && u.password === password);
+        
+        if (user) {
+            res.status(200).json({ mesaj: "Giriş başarılı, hoş geldin!", user: { email: user.email } });
+        } else {
+            res.status(401).json({ mesaj: "Hatalı e-posta veya şifre!" });
+        }
     });
 });
 
 app.listen(PORT, () => {
     console.log(`=================================`);
     console.log(`🚀 KAVRULMUŞ BACKEND AKTİF!`);
-    console.log(`📁 Veritabanı bağlantıları başarılı.`);
     console.log(`🌍 Sunucu adresi: http://localhost:${PORT}`);
-    console.log(`📦 API adresi: http://localhost:${PORT}/api/urunler`);
     console.log(`=================================`);
 });
