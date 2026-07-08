@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şifre Sıfırla | Kavrulmuş</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/account.css">
+</head>
+<body class="page-enter">
+    <main class="account-page" style="min-height:100vh;display:flex;align-items:center;justify-content:center;">
+        <div class="account-card" style="max-width:420px;width:100%;">
+            <h3>🔒 Yeni Şifre Belirle</h3>
+            <form id="reset-form" class="account-form">
+                <label for="new-pass">Yeni Şifre</label>
+                <input type="password" id="new-pass" minlength="6" required placeholder="En az 6 karakter">
+                <label for="new-pass2">Yeni Şifre (Tekrar)</label>
+                <input type="password" id="new-pass2" minlength="6" required placeholder="Tekrar girin">
+                <button type="submit" class="btn-premium primary">Şifreyi Güncelle</button>
+            </form>
+            <p style="margin-top:16px;text-align:center;"><a href="index.html">← Anasayfaya dön</a></p>
+        </div>
+    </main>
+    <div id="toast-container" class="toast-container"></div>
+    <script src="js/toast.js"></script>
+    <script>
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+        if (!token) {
+            document.querySelector('.account-card').innerHTML = '<h3>Geçersiz bağlantı</h3><p style="color:#888;">Şifre sıfırlama linki geçersiz veya süresi dolmuş.</p><a href="index.html">Anasayfa</a>';
+        }
+        document.getElementById('reset-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const yeniSifre = document.getElementById('new-pass').value;
+            const yeniSifre2 = document.getElementById('new-pass2').value;
+            if (yeniSifre !== yeniSifre2) return window.showToast('❌ Şifreler eşleşmiyor.');
+            const res = await fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, yeniSifre })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                window.showToast('✅ ' + data.mesaj);
+                setTimeout(() => location.href = 'index.html', 2000);
+            } else {
+                window.showToast('❌ ' + data.mesaj);
+            }
+        });
+    </script>
+</body>
+</html>

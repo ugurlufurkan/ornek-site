@@ -132,6 +132,19 @@
                     </div>
                 </div>
                 <div id="reviews-list"></div>
+                <form id="review-form" class="review-form" style="margin-top:24px;">
+                    <h4 style="color:var(--gold-accent);margin-bottom:12px;">Yorum Yap</h4>
+                    <select id="review-rating" required style="padding:10px;border-radius:6px;margin-bottom:10px;width:100%;">
+                        <option value="">Puan seçin</option>
+                        <option value="5">★★★★★ (5)</option>
+                        <option value="4">★★★★☆ (4)</option>
+                        <option value="3">★★★☆☆ (3)</option>
+                        <option value="2">★★☆☆☆ (2)</option>
+                        <option value="1">★☆☆☆☆ (1)</option>
+                    </select>
+                    <textarea id="review-text" rows="3" placeholder="Deneyiminizi paylaşın..." required style="width:100%;padding:12px;border-radius:6px;margin-bottom:10px;"></textarea>
+                    <button type="submit" class="btn-premium primary">Gönder</button>
+                </form>
             </div>
         </div>
 
@@ -246,6 +259,7 @@
 
     <div id="toast-container" class="toast-container"></div>
 
+    <script src="js/utils.js"></script>
     <script src="js/app.js"></script>
     <script src="js/toast.js"></script>
     <script src="js/cart.js"></script>

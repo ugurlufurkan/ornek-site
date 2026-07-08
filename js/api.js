@@ -1,60 +1,55 @@
-// js/api.js
-
+// js/api.js — Ürün listesi, arama, filtre, sıralama, skeleton
 document.addEventListener('DOMContentLoaded', async () => {
     const productsGrid = document.querySelector('.products-grid');
-    if(!productsGrid) return;
+    if (!productsGrid) return;
 
-    try {
-        const response = await fetch('/api/urunler');
-        const urunler = await response.json();
+    document.body.classList.add('page-enter');
 
-        if(urunler.length === 0) {
-            productsGrid.innerHTML = '<p style="color:#888; text-align:center; width: 100%;">Henüz vitrine kahve eklenmedi.</p>';
+    let allProducts = [];
+
+    function showSkeleton(count = 6) {
+        productsGrid.innerHTML = `<div class="skeleton-grid">${Array(count).fill('').map(() => `
+            <div class="skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-line medium"></div>
+                <div class="skeleton-line short"></div>
+            </div>
+        `).join('')}</div>`;
+    }
+
+    function renderProducts(urunler) {
+        if (!urunler.length) {
+            productsGrid.innerHTML = '<p style="color:#888;text-align:center;width:100%;">Filtreye uygun ürün bulunamadı.</p>';
             return;
         }
-        if (typeof updateFavoriteCounter === "function") {
-    updateFavoriteCounter();
-}
 
-        // Ürünleri Ekrana Çiz
         productsGrid.innerHTML = urunler.map(urun => {
-            // Stok Kontrolü
             const isTukendi = urun.stok !== undefined && urun.stok <= 0;
-            
-            // Stok bittiyse butonu pasif yap ve rengini değiştir
-            const butonGorseli = isTukendi 
-                ? `<button class="btn-premium secondary" disabled style="opacity:0.5; cursor:not-allowed;">❌ Tükendi</button>`
-                : `<button class="btn-premium primary add-to-cart" data-id="${urun.id}" data-title="${urun.baslik}" data-price="${urun.fiyat}" data-image="${urun.resim}">🛒 Sepete Ekle</button>`;
-            
-            // Resmin üzerine stok bilgisini yaz
-            const stokBadge = isTukendi 
+            const esc = window.escapeHtml || (s => s);
+            const butonGorseli = isTukendi
+                ? `<button class="btn-premium secondary" disabled style="opacity:0.5;cursor:not-allowed;">❌ Tükendi</button>`
+                : `<button class="btn-premium primary add-to-cart" data-id="${urun.id}" data-title="${esc(urun.baslik)}" data-price="${urun.fiyat}" data-image="${esc(urun.resim)}">🛒 Sepete Ekle</button>`;
+            const stokBadge = isTukendi
                 ? `<span class="badge" style="background:#ff4d4d;">Tükendi</span>`
                 : `<span class="badge weight">Stok: ${urun.stok || '10+'}</span>`;
 
-            // Ürün kartı (Tükendiyse resmi siyah beyaz yap - grayscale)
             return `
-            <div class="product-card animate fade-up" style="${isTukendi ? 'opacity: 0.7;' : ''}">
+            <div class="product-card animate fade-up" data-tur="${esc(urun.tur)}" style="${isTukendi ? 'opacity:0.7;' : ''}">
                 <div class="card-image-wrapper">
-                    <div class="card-badges">
-                        ${stokBadge}
-                    </div>
-                    <button class="wishlist-btn" data-id="${urun.id}">
-                     ♡
-                    </button>
+                    <div class="card-badges">${stokBadge}</div>
+                    <button class="wishlist-btn" data-id="${urun.id}">♡</button>
                     <a href="urun-detay.html?id=${urun.id}">
-                        <img src="${urun.resim}" alt="${urun.baslik}" class="product-img" style="${isTukendi ? 'filter: grayscale(100%);' : ''}">
+                        <img src="${esc(urun.resim)}" alt="${esc(urun.baslik)}" class="product-img" style="${isTukendi ? 'filter:grayscale(100%);' : ''}" loading="lazy">
                     </a>
                     <div class="quick-view-overlay">
-                    <a href="urun-detay.html?id=${urun.id}" class="btn-premium secondary">
-                       🔍 Ürünü İncele
-                    </a>
-                 </div>
+                        <a href="urun-detay.html?id=${urun.id}" class="btn-premium secondary">🔍 İncele</a>
+                    </div>
                 </div>
                 <div class="card-content">
                     <a href="urun-detay.html?id=${urun.id}" class="product-title-link">
-                        <h3 class="product-title">${urun.baslik}</h3>
+                        <h3 class="product-title">${esc(urun.baslik)}</h3>
                     </a>
-                    <p class="product-type">${urun.tur}</p>
+                    <p class="product-type">${esc(urun.tur)}</p>
                     <div class="card-footer">
                         <span class="price">${urun.fiyat} TL</span>
                         ${butonGorseli}
@@ -63,31 +58,68 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>`;
         }).join('');
 
-        // ÖNEMLİ: Ürünler API'den geldikten sonra DOM'a ekleniyor, yani
-        // animation.js sayfa ilk yüklenirken bu kartları henüz göremiyordu
-        // (bu yüzden kartlar "opacity:0" durumunda takılı kalıp görünmüyordu).
-        // Burada scroll animasyon gözlemcisini yeni eklenen kartlar için
-        // tekrar başlatıyoruz.
-        if (window.KavrulmusAnimations && typeof window.KavrulmusAnimations.initScrollAnimations === 'function') {
-            window.KavrulmusAnimations.initScrollAnimations();
-        } else {
-            // animation.js henüz yüklenmediyse (script sırası değiştiyse) yine de
-            // ürünlerin görünür kalmasını garanti altına al.
-            productsGrid.querySelectorAll('.product-card').forEach(card => card.classList.add('show'));
-        }
+        if (typeof updateFavoriteCounter === 'function') updateFavoriteCounter();
+        document.querySelectorAll('.wishlist-btn').forEach(btn => {
+            if (typeof updateFavoriteButton === 'function') updateFavoriteButton(btn, btn.dataset.id);
+        });
 
-        // ÖNEMLİ: Ürün resimleri de API'den geldikten sonra DOM'a ekleniyor.
-        // animation.js sayfa ilk yüklenirken bu resimleri henüz göremediği için
-        // "loaded" class'ını hiç alamıyor ve CSS'teki opacity:0 + blur takılı
-        // kalıyordu (kartlar görünüyor ama fotoğraflar hep bulanık/boş duruyordu).
-        // Burada resim görünürlük mantığını yeni eklenen kartlar için tekrar çalıştırıyoruz.
-        if (window.KavrulmusAnimations && typeof window.KavrulmusAnimations.initImageReveal === 'function') {
-            window.KavrulmusAnimations.initImageReveal();
-        } else {
-            // animation.js henüz yüklenmediyse yine de resimlerin görünür kalmasını garanti altına al.
-            productsGrid.querySelectorAll('.product-img').forEach(img => img.classList.add('loaded'));
-        }
-    } catch (error) {
-        console.error("Ürünler çekilemedi:", error);
+        if (window.KavrulmusAnimations?.initScrollAnimations) window.KavrulmusAnimations.initScrollAnimations();
+        else productsGrid.querySelectorAll('.product-card').forEach(c => c.classList.add('show'));
+
+        if (window.KavrulmusAnimations?.initImageReveal) window.KavrulmusAnimations.initImageReveal();
+        else productsGrid.querySelectorAll('.product-img').forEach(img => img.classList.add('loaded'));
     }
+
+    function applyFilters() {
+        const search = (document.getElementById('product-search')?.value || '').toLowerCase().trim();
+        const tur = document.getElementById('filter-tur')?.value || 'all';
+        const sort = document.getElementById('sort-price')?.value || 'default';
+        const stokFilter = document.getElementById('filter-stok')?.value || 'all';
+
+        let filtered = [...allProducts];
+
+        if (search) {
+            filtered = filtered.filter(u =>
+                u.baslik.toLowerCase().includes(search) || u.tur.toLowerCase().includes(search)
+            );
+        }
+        if (tur !== 'all') filtered = filtered.filter(u => u.tur === tur);
+        if (stokFilter === 'instock') filtered = filtered.filter(u => (u.stok ?? 1) > 0);
+        if (stokFilter === 'outofstock') filtered = filtered.filter(u => (u.stok ?? 0) <= 0);
+
+        if (sort === 'price-asc') filtered.sort((a, b) => Number(a.fiyat) - Number(b.fiyat));
+        if (sort === 'price-desc') filtered.sort((a, b) => Number(b.fiyat) - Number(a.fiyat));
+        if (sort === 'name') filtered.sort((a, b) => a.baslik.localeCompare(b.baslik, 'tr'));
+
+        renderProducts(filtered);
+    }
+
+    function populateTurFilter(urunler) {
+        const select = document.getElementById('filter-tur');
+        if (!select) return;
+        const turler = [...new Set(urunler.map(u => u.tur))].sort();
+        turler.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            select.appendChild(opt);
+        });
+    }
+
+    showSkeleton();
+
+    try {
+        const response = await fetch('/api/urunler');
+        allProducts = await response.json();
+        populateTurFilter(allProducts);
+        applyFilters();
+    } catch (error) {
+        console.error('Ürünler çekilemedi:', error);
+        productsGrid.innerHTML = '<p style="color:#888;">Ürünler yüklenemedi.</p>';
+    }
+
+    ['product-search', 'filter-tur', 'sort-price', 'filter-stok'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', applyFilters);
+        document.getElementById(id)?.addEventListener('change', applyFilters);
+    });
 });

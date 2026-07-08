@@ -70,6 +70,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- ŞİFREMİ UNUTTUM ---
+    const forgotLink = document.getElementById('forgot-password-link');
+    if (forgotLink) {
+        forgotLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const emailInput = loginForm?.querySelector('input[type="email"]');
+            const email = emailInput?.value?.trim() || prompt('Şifre sıfırlama için e-posta adresinizi girin:');
+            if (!email) return;
+            try {
+                const res = await fetch('/api/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                window.showToast(res.ok ? `✅ ${data.mesaj}` : `❌ ${data.mesaj}`);
+            } catch {
+                window.showToast('❌ İstek gönderilemedi.');
+            }
+        });
+    }
+
     closeBtns.forEach(btn => btn.addEventListener('click', function() {
         this.closest('.modal-overlay').classList.remove('active');
     }));
@@ -118,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('kavrulmus_token', data.token);
                     localStorage.setItem('kavrulmus_user', JSON.stringify(data.user));
                     checkSession();
+                    if (typeof syncFavoritesFromServer === 'function') await syncFavoritesFromServer();
                     if (window.location.pathname.includes('hesabim')) {
                         window.location.reload();
                     }
@@ -155,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     localStorage.setItem('kavrulmus_token', data.token);
                     localStorage.setItem('kavrulmus_user', JSON.stringify(data.user));
                     checkSession();
+                    if (typeof syncFavoritesFromServer === 'function') await syncFavoritesFromServer();
                     if (window.location.pathname.includes('hesabim')) {
                         window.location.reload();
                     }

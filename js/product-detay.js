@@ -186,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function urunuRenderEt(urun) {
         const isTukendi = urun.stok !== undefined && urun.stok <= 0;
         const bilgi = urunBilgileri[urun.baslik] || genelAciklamaUret(urun);
-        const { toplamYorum, ortalama, detayliYorumlar } = yorumlariUret(urun.id, urun.baslik);
 
         // Başlık / breadcrumb
         document.getElementById('page-title').textContent = `Kavrulmuş | ${urun.baslik}`;
@@ -225,39 +224,22 @@ document.addEventListener('DOMContentLoaded', () => {
             stokLine.className = 'detail-stock-line in-stock';
         }
 
-        // Yıldız / değerlendirme özeti
-        document.getElementById('detail-stars').textContent = yildizYaz(ortalama);
-        document.getElementById('detail-rating-count').textContent = `${toplamYorum} değerlendirme`;
+        // Yıldız / değerlendirme özeti (API'den yüklenecek)
+        document.getElementById('detail-stars').textContent = '★★★★★';
+        document.getElementById('detail-rating-count').textContent = 'Yükleniyor...';
         document.getElementById('detail-rating-row').addEventListener('click', () => {
             document.querySelector('.tab-btn[data-tab="degerlendirme"]').click();
             document.querySelector('.detail-tabs-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
+        loadReviews(urun.id);
 
         // Açıklama sekmesi
         document.getElementById('detail-long-desc').textContent = bilgi.uzunAciklama;
         document.getElementById('detail-notes').innerHTML = bilgi.notlar
-            .map(n => `<span class="tasting-note">${n}</span>`)
+            .map(n => `<span class="tasting-note">${window.escapeHtml ? escapeHtml(n) : n}</span>`)
             .join('');
 
-        // Değerlendirmeler sekmesi
-        document.getElementById('tab-review-count').textContent = toplamYorum;
-        document.getElementById('reviews-avg-number').textContent = ortalama.toFixed(1);
-        document.getElementById('reviews-avg-stars').textContent = yildizYaz(ortalama);
-        document.getElementById('reviews-avg-count').textContent = `${toplamYorum} değerlendirme`;
-
-        document.getElementById('reviews-list').innerHTML = detayliYorumlar.map(y => `
-            <div class="review-card">
-                <div class="review-head">
-                    <div class="review-avatar">${y.isim.split(' ').map(p => p[0]).join('')}</div>
-                    <div class="review-meta">
-                        <div class="review-name">${y.isim}<span class="verified-badge">✓ Doğrulanmış Alışveriş</span></div>
-                        <div class="review-date">${y.tarih}</div>
-                    </div>
-                </div>
-                <span class="stars">${yildizYaz(y.puan)}</span>
-                <p class="review-comment">${y.yorum}</p>
-            </div>
-        `).join('');
+        // Değerlendirmeler sekmesi — loadReviews doldurur
 
         // Sepete ekle butonu — miktar seçiciyle senkron
         const addBtn = document.getElementById('detail-add-to-cart');
@@ -290,31 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
             addBtnGuncelle();
         });
 
-        // Favoriye ekle (localStorage — anasayfadaki wishlist mantığıyla aynı anahtar)
+        // Favoriye ekle — favorites.js ile (data-id)
         const wishBtn = document.getElementById('detail-wishlist-btn');
-        const favKey = 'kavrulmus_favoriler';
-        let favoriler = JSON.parse(localStorage.getItem(favKey) || '[]');
-        if (favoriler.includes(urun.baslik)) {
-            wishBtn.classList.add('active');
-            wishBtn.textContent = '♥';
-        }
-        wishBtn.addEventListener('click', () => {
-            wishBtn.classList.toggle('active');
-            const aktifMi = wishBtn.classList.contains('active');
-            wishBtn.textContent = aktifMi ? '♥' : '♡';
-
-            favoriler = JSON.parse(localStorage.getItem(favKey) || '[]');
-            if (aktifMi) {
-                if (!favoriler.includes(urun.baslik)) favoriler.push(urun.baslik);
-            } else {
-                favoriler = favoriler.filter(f => f !== urun.baslik);
-            }
-            localStorage.setItem(favKey, JSON.stringify(favoriler));
-
-            if (typeof window.showToast === 'function') {
-                window.showToast(aktifMi ? `❤️ ${urun.baslik} favorilere eklendi` : `💔 ${urun.baslik} favorilerden çıkarıldı`);
-            }
-        });
+        wishBtn.dataset.id = urun.id;
+        wishBtn.classList.add('detail-wishlist-btn');
+        if (typeof updateFavoriteButton === 'function') updateFavoriteButton(wishBtn, urun.id);
 
         // Sekme geçişleri
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -325,6 +287,75 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
             });
         });
+    }
+
+    async function loadReviews(productId) {
+        const esc = window.escapeHtml || (s => s);
+        try {
+            const res = await fetch(`/api/urunler/${productId}/yorumlar`);
+            if (!res.ok) return;
+            const data = await res.json();
+            const toplamYorum = data.toplam || 0;
+            const ortalama = data.ortalama || 0;
+
+            document.getElementById('tab-review-count').textContent = toplamYorum;
+            document.getElementById('reviews-avg-number').textContent = ortalama.toFixed(1);
+            document.getElementById('reviews-avg-stars').textContent = yildizYaz(ortalama);
+            document.getElementById('reviews-avg-count').textContent = `${toplamYorum} değerlendirme`;
+            document.getElementById('detail-stars').textContent = yildizYaz(ortalama);
+            document.getElementById('detail-rating-count').textContent = `${toplamYorum} değerlendirme`;
+
+            const list = document.getElementById('reviews-list');
+            if (!data.yorumlar.length) {
+                list.innerHTML = '<p style="color:#888;">Henüz yorum yok. İlk yorumu siz yapın!</p>';
+            } else {
+                list.innerHTML = data.yorumlar.map(y => {
+                    const tarih = new Date(y.tarih).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
+                    return `
+                    <div class="review-card">
+                        <div class="review-head">
+                            <div class="review-avatar">${esc(y.kullanici_ad).slice(0, 2).toUpperCase()}</div>
+                            <div class="review-meta">
+                                <div class="review-name">${esc(y.kullanici_ad)}</div>
+                                <div class="review-date">${tarih}</div>
+                            </div>
+                        </div>
+                        <span class="stars">${yildizYaz(y.puan)}</span>
+                        <p class="review-comment">${esc(y.yorum)}</p>
+                    </div>`;
+                }).join('');
+            }
+
+            const form = document.getElementById('review-form');
+            if (form) {
+                form.onsubmit = async (e) => {
+                    e.preventDefault();
+                    const token = localStorage.getItem('kavrulmus_token');
+                    if (!token) {
+                        window.showToast?.('⚠️ Yorum yapmak için giriş yapın.');
+                        document.getElementById('auth-modal')?.classList.add('active');
+                        return;
+                    }
+                    const puan = document.getElementById('review-rating').value;
+                    const yorum = document.getElementById('review-text').value;
+                    const r = await fetch(`/api/urunler/${productId}/yorumlar`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                        body: JSON.stringify({ puan, yorum })
+                    });
+                    const d = await r.json();
+                    if (r.ok) {
+                        form.reset();
+                        window.showToast?.(`✅ ${d.mesaj}`);
+                        loadReviews(productId);
+                    } else {
+                        window.showToast?.(`❌ ${d.mesaj}`);
+                    }
+                };
+            }
+        } catch (e) {
+            console.error(e);
+        }
     }
 
     /* -----------------------------------------------------

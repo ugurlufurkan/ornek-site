@@ -1,0 +1,66 @@
+/* Dark / Light tema */
+body.light-mode {
+    --bg-dark: #F5F0EB;
+    --text-light: #1A1512;
+    --gold-accent: #A67C3D;
+    --glass-bg: rgba(245, 240, 235, 0.85);
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+}
+
+body.light-mode .navbar {
+    background: rgba(245, 240, 235, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .product-card,
+body.light-mode .account-card,
+body.light-mode .order-card {
+    background: #fff;
+    border-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .modal-box,
+body.light-mode .cart-sidebar {
+    background: #fff;
+    color: #1A1512;
+}
+
+body.light-mode .account-dropdown {
+    background: #fff;
+    border-color: #ddd;
+}
+
+body.light-mode .account-dropdown a {
+    color: #333;
+}
+
+body.light-mode .products-toolbar input,
+body.light-mode .products-toolbar select {
+    background: #fff;
+    color: #1A1512;
+    border-color: rgba(0, 0, 0, 0.15);
+}
+
+#theme-toggle {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: transform 0.2s;
+}
+
+#theme-toggle:hover {
+    transform: scale(1.15);
+}
+
+/* Sayfa geçiş animasyonu */
+body.page-enter {
+    animation: pageFadeIn 0.35s ease;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}

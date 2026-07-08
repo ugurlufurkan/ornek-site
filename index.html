@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/modal.css">
-    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/theme.css">
     <style>
         /* --- HESAP DROPDOWN MENÜSÜ --- */
         .account-menu { position: relative; }
@@ -86,14 +86,14 @@
         </ul>
         
        <div class="nav-actions">
-
+    <button id="theme-toggle" class="btn-text" title="Tema değiştir">☀️</button>
     <div class="account-menu" id="account-menu">
         <button id="open-auth" class="btn-text">
             👤 Giriş Yap
         </button>
 
         <div class="account-dropdown" id="account-dropdown">
-            <a href="#" id="account-profile-link">👤 Hesabım</a>
+            <a href="hesabim.html" id="account-profile-link">👤 Hesabım</a>
             <a href="favoriler.html" id="account-favorites-link">❤️ Favoriler</a>
             <a href="#" id="account-logout-link" class="logout-link">🚪 Çıkış Yap</a>
         </div>
@@ -329,6 +329,7 @@
                 <input type="email" placeholder="E-Posta Adresiniz" required>
                 <input type="password" placeholder="Şifreniz" required>
                 <button type="submit" class="btn-premium primary" style="width:100%; margin-top:10px;">Giriş Yap</button>
+                <a href="#" id="forgot-password-link" style="text-align:center;color:#888;font-size:0.85rem;margin-top:8px;">Şifremi unuttum</a>
             </form>
             <form id="register-form" class="modal-form">
 
@@ -419,6 +420,8 @@
 
     <div id="toast-container" class="toast-container"></div>
 
+    <script src="js/utils.js"></script>
+    <script src="js/theme.js"></script>
     <script src="js/app.js"></script>
     <script src="js/toast.js"></script>
     <script src="js/cart.js"></script>

@@ -9,11 +9,14 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
     <link rel="stylesheet" href="css/products.css">
+    <link rel="stylesheet" href="css/products-toolbar.css">
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/cart.css">
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/theme.css">
 </head>
 <body>
     <div class="cursor-ring" id="cursor-ring"></div>
@@ -32,6 +35,7 @@
         </ul>
         
         <div class="nav-actions">
+            <button id="theme-toggle" class="btn-text" title="Tema değiştir">☀️</button>
             <button id="open-auth" class="btn-text">👤 Giriş Yap</button>
             <button class="btn-premium cart-btn" id="cart-icon">
                 🛒 Sepet (<span id="cart-count">0</span>)
@@ -43,6 +47,22 @@
         <div class="section-header animate fade-up">
             <h2>Kahve Kavurma Atölyesi Menüsü</h2>
             <p>Admin panelinden eklenen tüm güncel kahvelerimiz gerçek zamanlı listelenir.</p>
+        </div>
+        
+        <div class="products-toolbar animate fade-up">
+            <input type="search" id="product-search" placeholder="🔍 Kahve ara..." autocomplete="off">
+            <select id="filter-tur"><option value="all">Tüm Kategoriler</option></select>
+            <select id="sort-price">
+                <option value="default">Sıralama</option>
+                <option value="price-asc">Fiyat: Düşük → Yüksek</option>
+                <option value="price-desc">Fiyat: Yüksek → Düşük</option>
+                <option value="name">İsme Göre (A-Z)</option>
+            </select>
+            <select id="filter-stok">
+                <option value="all">Tüm Stoklar</option>
+                <option value="instock">Stokta Var</option>
+                <option value="outofstock">Tükendi</option>
+            </select>
         </div>
         
         <div class="products-grid"></div>
@@ -114,6 +134,7 @@
                 <input type="email" placeholder="E-Posta Adresiniz" required>
                 <input type="password" placeholder="Şifreniz" required>
                 <button type="submit" class="btn-premium primary" style="width:100%; margin-top:10px;">Giriş Yap</button>
+                <a href="#" id="forgot-password-link" style="text-align:center;color:#888;font-size:0.85rem;margin-top:8px;">Şifremi unuttum</a>
             </form>
             <form id="register-form" class="modal-form">
                 <input type="text" placeholder="Ad Soyad" required>
@@ -152,6 +173,8 @@
 
     <div id="toast-container" class="toast-container"></div>
 
+    <script src="js/utils.js"></script>
+    <script src="js/theme.js"></script>
     <script src="js/app.js"></script>
     <script src="js/toast.js"></script>
     <script src="js/cart.js"></script>
