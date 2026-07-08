@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  veritabani:
+    # M1/M2 Mac veya Windows fark etmeksizin en hafif ve hızlı sürüm
+    image: postgres:15-alpine
+    container_name: kavrulmus_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: patron
+      POSTGRES_PASSWORD: supergizlisifre2026
+      POSTGRES_DB: kavrulmus_db
+    ports:
+      # Kendi bilgisayarımızdaki 5432 portunu, Docker'ın içindeki 5432'ye bağlıyoruz
+      - "5432:5432"
+    volumes:
+      # Konteyner kapansa bile veriler silinmesin diye kalıcı hafıza (volume) oluşturuyoruz
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
