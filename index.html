@@ -15,6 +15,49 @@
     <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/animations.css">
+    <style>
+        /* --- HESAP DROPDOWN MENÜSÜ --- */
+        .account-menu { position: relative; }
+        .account-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            min-width: 190px;
+            padding: 8px 0;
+            z-index: 500;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+        }
+        .account-menu.logged-in:hover .account-dropdown,
+        .account-menu.menu-open .account-dropdown {
+            display: block;
+        }
+        .account-dropdown a {
+            display: block;
+            padding: 11px 18px;
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-family: 'Poppins', sans-serif;
+            transition: 0.2s;
+        }
+        .account-dropdown a:hover {
+            background: var(--gold-accent, #d4af37);
+            color: #111;
+        }
+        .account-dropdown a.logout-link {
+            border-top: 1px solid #2a2a2a;
+            color: #ff6b6b;
+        }
+        .account-dropdown a.logout-link:hover {
+            background: #ff6b6b;
+            color: #111;
+        }
+    </style>
 </head>
 <body>
     <div class="cursor-ring" id="cursor-ring"></div>
@@ -43,7 +86,14 @@
         </ul>
         
         <div class="nav-actions">
-            <button id="open-auth" class="btn-text">👤 Giriş Yap</button>
+            <div class="account-menu" id="account-menu">
+                <button id="open-auth" class="btn-text">👤 Giriş Yap</button>
+                <div class="account-dropdown" id="account-dropdown">
+                    <a href="#" id="account-profile-link">👤 Hesabım</a>
+                    <a href="#" id="account-favorites-link">♡ Favoriler</a>
+                    <a href="#" id="account-logout-link" class="logout-link">🚪 Çıkış Yap</a>
+                </div>
+            </div>
             <button class="btn-premium cart-btn" id="cart-icon">
                 🛒 Sepet (<span id="cart-count">0</span>)
             </button>

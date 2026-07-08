@@ -10,32 +10,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
 
+    // --- HESAP DROPDOWN ELEMANLARI ---
+    const accountMenu = document.getElementById('account-menu');
+    const logoutLink = document.getElementById('account-logout-link');
+    const profileLink = document.getElementById('account-profile-link');
+    const favoritesLink = document.getElementById('account-favorites-link');
+
     // --- 1. GÜVENLİ OTURUM KONTROLÜ (JWT TOKEN İLE) ---
     const checkSession = () => {
         const token = localStorage.getItem('kavrulmus_token');
         const userEmail = localStorage.getItem('kavrulmus_user_email');
         
         if (token && userEmail && openAuthBtn) {
-            openAuthBtn.innerHTML = `👤 ${userEmail.split('@')[0]} (Çıkış)`;
-            openAuthBtn.classList.add('logged-in'); 
+            openAuthBtn.innerHTML = `👤 ${userEmail.split('@')[0]} ▾`;
+            if (accountMenu) accountMenu.classList.add('logged-in');
+        } else if (openAuthBtn) {
+            openAuthBtn.innerHTML = `👤 Giriş Yap`;
+            if (accountMenu) accountMenu.classList.remove('logged-in');
         }
     };
     checkSession(); 
 
-    // Modalı Aç veya Çıkış Yap
+    // Butona tıklama: giriş yapılmamışsa modalı aç.
+    // Giriş yapılmışsa (masaüstünde dropdown zaten hover ile açılıyor) —
+    // dokunmatik ekranlar için tıklamada da aç/kapat yapalım.
     if (openAuthBtn) {
         openAuthBtn.addEventListener('click', () => {
-            if (openAuthBtn.classList.contains('logged-in')) {
-                // ÇIKIŞ YAP (Token'ı Yok Et)
-                localStorage.removeItem('kavrulmus_token');
-                localStorage.removeItem('kavrulmus_user_email');
-                openAuthBtn.innerHTML = `👤 Giriş / Kayıt`;
-                openAuthBtn.classList.remove('logged-in');
-                window.showToast('ℹ️ Başarıyla çıkış yapıldı.');
-                setTimeout(() => window.location.reload(), 1000); // Sepeti vb sıfırlamak için sayfayı tazele
+            if (accountMenu && accountMenu.classList.contains('logged-in')) {
+                accountMenu.classList.toggle('menu-open');
             } else {
                 authModal.classList.add('active');
             }
+        });
+    }
+
+    // Dropdown dışına tıklanınca kapansın (dokunmatik/mobil için)
+    document.addEventListener('click', (e) => {
+        if (accountMenu && !accountMenu.contains(e.target)) {
+            accountMenu.classList.remove('menu-open');
+        }
+    });
+
+    // --- ÇIKIŞ YAP ---
+    if (logoutLink) {
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('kavrulmus_token');
+            localStorage.removeItem('kavrulmus_user_email');
+            window.showToast('ℹ️ Başarıyla çıkış yapıldı.');
+            setTimeout(() => window.location.reload(), 800);
+        });
+    }
+
+    // --- HESABIM / FAVORİLER (şimdilik yer tutucu) ---
+    if (profileLink) {
+        profileLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.showToast('👤 Hesabım sayfası yakında geliyor!');
+        });
+    }
+    if (favoritesLink) {
+        favoritesLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.showToast('♡ Favoriler sayfası yakında geliyor!');
         });
     }
 

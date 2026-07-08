@@ -17,7 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function initScrollAnimations() {
 
-    const elements = document.querySelectorAll(".animate");
+    // Sadece henüz gözlemlenmemiş (show class'ı olmayan) .animate elemanlarını seç.
+    // Bu sayede fonksiyon sonradan (örn. ürünler API'den geldikten sonra) tekrar
+    // çağrıldığında zaten görünür olanları yeniden gözlemlemeye çalışmaz.
+    const elements = document.querySelectorAll(".animate:not(.show)");
 
     const observer = new IntersectionObserver((entries) => {
 
@@ -48,6 +51,12 @@ function initScrollAnimations() {
     });
 
 }
+
+// Bu fonksiyonu dışarıdan (örn. api.js, ürünleri DOM'a ekledikten sonra)
+// tekrar çağırabilmek için global olarak erişilebilir yapıyoruz.
+window.KavrulmusAnimations = {
+    initScrollAnimations
+};
 
 /* =====================================================
    COUNTER ANIMATION

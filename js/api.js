@@ -47,6 +47,19 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
             </div>`;
         }).join('');
+
+        // ÖNEMLİ: Ürünler API'den geldikten sonra DOM'a ekleniyor, yani
+        // animation.js sayfa ilk yüklenirken bu kartları henüz göremiyordu
+        // (bu yüzden kartlar "opacity:0" durumunda takılı kalıp görünmüyordu).
+        // Burada scroll animasyon gözlemcisini yeni eklenen kartlar için
+        // tekrar başlatıyoruz.
+        if (window.KavrulmusAnimations && typeof window.KavrulmusAnimations.initScrollAnimations === 'function') {
+            window.KavrulmusAnimations.initScrollAnimations();
+        } else {
+            // animation.js henüz yüklenmediyse (script sırası değiştiyse) yine de
+            // ürünlerin görünür kalmasını garanti altına al.
+            productsGrid.querySelectorAll('.product-card').forEach(card => card.classList.add('show'));
+        }
     } catch (error) {
         console.error("Ürünler çekilemedi:", error);
     }
