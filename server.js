@@ -32,15 +32,22 @@ app.get('/api/urunler', (req, res) => {
     });
 });
 
-// 2. API: YENİ ÜRÜN EKLE (ADMIN)
+// 2. API: YENİ ÜRÜN EKLE (ADMIN) - STOK ALTYAPISIYLA BİRLİKTE
 app.post('/api/urunler', (req, res) => {
-    const { baslik, tur, fiyat, resimUrl } = req.body;
+    const { baslik, tur, fiyat, resimUrl, stok } = req.body;
     fs.readFile(dbPath, 'utf8', (err, data) => {
         if (err) return res.status(500).json({ mesaj: "Veritabanı hatası" });
         let urunler = [];
         try { urunler = JSON.parse(data); } catch (e) { urunler = []; }
 
-        const yeniUrun = { id: Date.now(), baslik: baslik || "İsimsiz Kahve", tur: tur || "Standart", fiyat: fiyat || "0", resim: resimUrl };
+        const yeniUrun = { 
+            id: Date.now(), 
+            baslik: baslik || "İsimsiz Kahve", 
+            tur: tur || "Standart", 
+            fiyat: fiyat || "0", 
+            resim: resimUrl,
+            stok: parseInt(stok) || 10 // Varsayılan stok 10
+        };
         urunler.push(yeniUrun);
 
         fs.writeFile(dbPath, JSON.stringify(urunler, null, 2), (err) => {
@@ -93,36 +100,43 @@ app.post('/api/auth/login', (req, res) => {
     });
 });
 
-// 5. API: SİPARİŞİ VERİTABANINA KAYDET
+// 5. API: SİPARİŞİ KAYDET VE STOKLARI DÜŞÜR
 app.post('/api/siparis', (req, res) => {
     const { musteriAd, telefon, adres, odemeYontemi, sepet, toplamTutar, userEmail } = req.body;
     
     fs.readFile(ordersDbPath, 'utf8', (err, data) => {
         if (err) return res.status(500).json({ mesaj: "Sipariş veritabanı hatası" });
-        
         let siparisler = [];
         try { siparisler = JSON.parse(data); } catch (e) { siparisler = []; }
 
         const takipNo = 'KVR-' + Math.floor(1000 + Math.random() * 9000);
-
-        const yeniSiparis = {
-            id: takipNo,
-            tarih: new Date().toISOString(),
-            musteriAd, 
-            telefon, 
-            adres, 
-            odemeYontemi, 
-            userEmail,
-            urunler: sepet, 
-            toplamTutar,
-            durum: 'Hazırlanıyor' 
-        };
-
+        const yeniSiparis = { id: takipNo, tarih: new Date().toISOString(), musteriAd, telefon, adres, odemeYontemi, userEmail, urunler: sepet, toplamTutar, durum: 'Hazırlanıyor' };
+        
         siparisler.push(yeniSiparis);
 
         fs.writeFile(ordersDbPath, JSON.stringify(siparisler, null, 2), (err) => {
             if (err) return res.status(500).json({ mesaj: "Sipariş kaydedilemedi" });
-            res.status(201).json({ mesaj: "Sipariş başarıyla alındı!", takipNo });
+            
+            // Sipariş kaydedildi, şimdi satılan ürünlerin stoğunu düşür
+            fs.readFile(dbPath, 'utf8', (err, dbData) => {
+                if (!err) {
+                    let urunler = [];
+                    try { urunler = JSON.parse(dbData); } catch (e) {}
+                    
+                    sepet.forEach(sepetUrun => {
+                        const dbUrun = urunler.find(u => u.id.toString() === sepetUrun.id.toString());
+                        if (dbUrun) {
+                            dbUrun.stok = Math.max(0, (dbUrun.stok || 0) - sepetUrun.quantity);
+                        }
+                    });
+
+                    fs.writeFile(dbPath, JSON.stringify(urunler, null, 2), () => {
+                        res.status(201).json({ mesaj: "Sipariş başarıyla alındı!", takipNo });
+                    });
+                } else {
+                    res.status(201).json({ mesaj: "Sipariş başarıyla alındı!", takipNo });
+                }
+            });
         });
     });
 });
@@ -131,11 +145,7 @@ app.post('/api/siparis', (req, res) => {
 app.get('/api/siparisler', (req, res) => {
     fs.readFile(ordersDbPath, 'utf8', (err, data) => {
         if (err) return res.status(500).json({ mesaj: "Siparişler okunamadı" });
-        try { 
-            res.json(JSON.parse(data)); 
-        } catch (e) { 
-            res.json([]); 
-        }
+        try { res.json(JSON.parse(data)); } catch (e) { res.json([]); }
     });
 });
 
