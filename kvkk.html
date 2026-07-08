@@ -3,18 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kavrulmuş Kahve KVKK aydınlatma metni.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <title>KVKK Aydınlatma Metni | Kavrulmuş</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/responsive.css">
     <style>
-        body { background: #111; color: #ccc; font-family: 'Poppins', sans-serif; line-height: 1.8; padding: 50px 20px; }
-        .container { max-width: 800px; margin: 0 auto; background: #1a1a1a; padding: 40px; border-radius: 12px; border: 1px solid #333; }
-        h1, h2 { color: #d4af37; margin-bottom: 20px; }
-        p { margin-bottom: 20px; font-size: 0.95rem; }
-        a { color: #d4af37; text-decoration: none; font-weight: bold; }
+        .legal-wrap { max-width: 800px; margin: 120px auto 60px; padding: 0 5%; }
+        .legal-box { background: rgba(255,255,255,0.03); padding: 40px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+        h1, h2 { color: var(--gold-accent, #d4af37); margin-bottom: 20px; }
+        p { margin-bottom: 20px; font-size: 0.95rem; line-height: 1.8; color: #ccc; }
+        body.light-mode .legal-box { background: #fff; border-color: rgba(0,0,0,0.08); }
+        body.light-mode p { color: #444; }
     </style>
 </head>
 <body>
-    <div class="container">
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand"><a href="index.html" style="color:inherit;">Kavrulmuş<span>.</span></a></div>
+        <ul class="nav-links">
+            <li><a href="index.html">Anasayfa</a></li>
+            <li><a href="urunler.html">Ürünler</a></li>
+            <li><a href="iletisim.html">İletişim</a></li>
+        </ul>
+    </nav>
+    <div class="legal-wrap">
+    <div class="legal-box">
         <h1>Kavrulmuş Kahve KVKK Aydınlatma Metni</h1>
         <p>6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, veri sorumlusu sıfatıyla Kavrulmuş Kahve olarak, siz değerli misafirlerimizin kişisel verilerini yasal sınırlar çerçevesinde büyük bir titizlikle işlemekteyiz.</p>
         
@@ -25,7 +41,9 @@
         <p>Hesap şifreleriniz veri tabanımızda gelişmiş kriptolama algoritmaları (Bcrypt) ile hash'lenerek saklanmakta olup, üçüncü tarafların erişimine tamamen kapalıdır.</p>
         
         <br>
-        <a href="index.html">← Anasayfaya Dön</a>
+        <a href="index.html" style="color:var(--gold-accent);font-weight:600;">← Anasayfaya Dön</a>
     </div>
+    </div>
+    <script src="js/theme.js"></script>
 </body>
 </html>

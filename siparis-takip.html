@@ -3,43 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>İade ve Değişim Şartları | Kavrulmuş</title>
+    <meta name="description" content="Kavrulmuş sipariş takip — KVR numaranızla sipariş durumunuzu sorgulayın.">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <title>Sipariş Takip | Kavrulmuş</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="css/account-menu.css">
-    <link rel="stylesheet" href="css/footer.css">
-    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/pages.css">
     <link rel="stylesheet" href="css/cart.css">
+    <link rel="stylesheet" href="css/footer.css">
     <link rel="stylesheet" href="css/modal.css">
-    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/account-menu.css">
+    <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/responsive.css">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <style>
-        .legal-section { max-width: 800px; margin: 120px auto 60px; padding: 0 5%; }
-        .legal-section h1 { font-family: var(--font-heading); color: var(--gold-accent); margin-bottom: 20px; }
-        .legal-section h2 { color: var(--gold-accent); margin: 28px 0 12px; font-size: 1.2rem; }
-        .legal-section p { line-height: 1.9; color: #bbb; margin-bottom: 16px; }
-        body.light-mode .legal-section p { color: #444; }
+        .track-section { max-width: 560px; margin: 0 auto; padding: 40px 5% 80px; }
+        .track-form { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+        .track-form input { flex: 1; min-width: 200px; padding: 14px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); color: var(--text-light); font-family: var(--font-body); }
+        body.light-mode .track-form input { background: #fff; color: #1A1512; border-color: rgba(0,0,0,0.15); }
+        #track-result { margin-top: 24px; display: none; }
     </style>
 </head>
 <body>
     <nav class="navbar" id="navbar">
-        <div class="nav-brand">Kavrulmuş<span>.</span></div>
+        <div class="nav-brand"><a href="index.html" style="color:inherit;display:flex;align-items:center;">Kavrulmuş<span>.</span></a></div>
         <ul class="nav-links">
             <li><a href="index.html">Anasayfa</a></li>
-            <li><a href="hakkimizda.html">Hakkımızda</a></li>
             <li><a href="urunler.html">Ürünlerimiz</a></li>
-            <li><a href="blog.html">Blog</a></li>
             <li><a href="iletisim.html">İletişim</a></li>
+            <li><a href="siparis-takip.html" style="color:var(--gold-accent);">Sipariş Takip</a></li>
         </ul>
         <div class="nav-actions">
             <button id="theme-toggle" class="btn-text" title="Tema değiştir">☀️</button>
             <div class="account-menu" id="account-menu">
                 <button id="open-auth" class="btn-text">👤 Giriş Yap</button>
                 <div class="account-dropdown" id="account-dropdown">
-                    <a href="hesabim.html" id="account-profile-link">👤 Hesabım</a>
-                    <a href="favoriler.html" id="account-favorites-link">❤️ Favoriler</a>
+                    <a href="hesabim.html">👤 Hesabım</a>
+                    <a href="favoriler.html">❤️ Favoriler</a>
                     <a href="#" id="account-logout-link" class="logout-link">🚪 Çıkış Yap</a>
                 </div>
             </div>
@@ -48,20 +48,17 @@
         </div>
     </nav>
 
-    <section class="legal-section">
-        <h1>İade ve Değişim Şartları</h1>
-        <p>Kavrulmuş Kahve olarak önceliğimiz, kavurma atölyemizden çıkan taptaze çekirdeklerin fincanınızla en yüksek kalitede buluşmasıdır.</p>
+    <header class="page-header">
+        <h1>Sipariş Takip</h1>
+        <p>Sipariş onay e-postanızdaki <strong>KVR-XXXX</strong> numarasını girerek durumu öğrenin.</p>
+    </header>
 
-        <h2>1. Gıda Ürünlerinde İade Politikası</h2>
-        <p>Türk Ticaret Kanunu gıda maddeleri yönetmeliği uyarınca, ambalajı açılmış, orijinal yapısı bozulmuş veya hava almış kahve çekirdeklerinin/öğütülmüş kahvelerin sağlık ve hijyen kuralları gereği iadesi veya değişimi yapılamamaktadır.</p>
-
-        <h2>2. Hasarlı veya Kusurlu Gönderiler</h2>
-        <p>Kargodan kaynaklı hasarlı gelen paketlerde, kargo görevlisine "Hasar Tespit Tutanağı" tutturmanız durumunda ürününüz sorgusuz sualsiz yenisiyle değiştirilerek adresinize tekrar postalanacaktır.</p>
-
-        <h2>3. Cayma Hakkı</h2>
-        <p>Açılmamış ve orijinal ambalajında ürünlerde teslimattan itibaren 14 gün içinde cayma hakkınız bulunmaktadır. Detaylar için <a href="mesafeli-satis.html" style="color:var(--gold-accent)">Mesafeli Satış Sözleşmesi</a> sayfasına bakınız.</p>
-
-        <p style="margin-top:30px;"><a href="index.html" class="btn-premium secondary">← Anasayfaya Dön</a></p>
+    <section class="track-section">
+        <form id="track-form" class="track-form">
+            <input type="text" id="track-no" placeholder="Örn: KVR-1234" pattern="KVR-\d{4}" required>
+            <button type="submit" class="btn-premium primary">Sorgula</button>
+        </form>
+        <div id="track-result"></div>
     </section>
 
     <footer class="premium-footer">
@@ -77,8 +74,8 @@
                 <button class="auth-tab" id="tab-register">Kayıt Ol</button>
             </div>
             <form id="login-form" class="modal-form active">
-                <input type="email" placeholder="E-Posta Adresiniz" required>
-                <input type="password" placeholder="Şifreniz" required>
+                <input type="email" placeholder="E-Posta" required>
+                <input type="password" placeholder="Şifre" required>
                 <button type="submit" class="btn-premium primary" style="width:100%;margin-top:10px;">Giriş Yap</button>
             </form>
             <form id="register-form" class="modal-form">
@@ -95,7 +92,7 @@
     <script src="js/toast.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/favorites.js"></script>
-    <script src="js/app.js"></script>
     <script src="js/store-ui.js"></script>
+    <script src="js/order-track.js"></script>
 </body>
 </html>

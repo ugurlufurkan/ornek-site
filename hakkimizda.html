@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="css/account-menu.css">
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/modal.css">
+    <link rel="stylesheet" href="css/cart.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <style>
         .about-section { max-width: 900px; margin: 120px auto 60px; padding: 0 5%; }
         .about-section h1 { font-family: var(--font-heading); color: var(--gold-accent); font-size: 2.5rem; margin-bottom: 20px; }
@@ -50,7 +53,7 @@
                 </div>
             </div>
             <a href="favoriler.html" class="nav-icon favorite-nav">❤️<span class="favorite-count" id="favorite-count">0</span></a>
-            <a href="urunler.html" class="btn-premium">Alışverişe Başla</a>
+            <button class="btn-premium cart-btn" id="cart-icon">🛒 Sepet (<span id="cart-count">0</span>)</button>
         </div>
     </nav>
 
@@ -132,5 +135,6 @@
     <script src="js/toast.js"></script>
     <script src="js/modal.js"></script>
     <script src="js/favorites.js"></script>
+    <script src="js/store-ui.js"></script>
 </body>
 </html>

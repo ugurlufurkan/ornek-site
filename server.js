@@ -2,6 +2,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -20,6 +21,14 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const APP_URL = process.env.APP_URL || `http://localhost:${PORT}`;
+
+if (!JWT_SECRET || !ADMIN_PASSWORD) {
+    console.warn('⚠️  JWT_SECRET ve ADMIN_PASSWORD .env dosyasında tanımlı olmalı.');
+    if (process.env.NODE_ENV === 'production') {
+        console.error('❌ Production ortamında zorunlu env değişkenleri eksik.');
+        process.exit(1);
+    }
+}
 
 app.use(express.json({ limit: '100kb' }));
 
@@ -42,13 +51,21 @@ if (rateLimit) {
 }
 
 app.use((req, res, next) => {
-    if (req.path === '/.env' || req.path.startsWith('/.env.')) {
+    const blocked = ['/.env', '/node_modules', '/.git'];
+    if (blocked.some(p => req.path === p || req.path.startsWith(p + '/'))) {
         return res.status(404).end();
     }
     next();
 });
 
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, {
+    dotfiles: 'deny',
+    index: false
+}));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 const pool = new Pool({
     user: process.env.DB_USER,
@@ -56,6 +73,15 @@ const pool = new Pool({
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
+});
+
+app.get('/api/health', async (req, res) => {
+    try {
+        await pool.query('SELECT 1');
+        res.json({ ok: true, uptime: process.uptime() });
+    } catch {
+        res.status(503).json({ ok: false, mesaj: 'Veritabanı bağlantısı yok' });
+    }
 });
 
 const transporter = nodemailer.createTransport({
@@ -757,6 +783,40 @@ app.get('/api/iletisim', verifyAdmin, async (req, res) => {
         console.error(err);
         res.status(500).json({ mesaj: 'Mesajlar okunamadı.' });
     }
+});
+
+app.get('/api/siparisler/takip/:id', async (req, res) => {
+    const { id } = req.params;
+    if (!/^KVR-\d{4}$/.test(id)) {
+        return res.status(400).json({ mesaj: 'Geçersiz takip numarası. Örnek: KVR-1234' });
+    }
+    try {
+        const result = await pool.query(
+            'SELECT id, tarih, urunler, toplam_tutar, durum FROM orders WHERE id = $1',
+            [id]
+        );
+        if (!result.rows.length) return res.status(404).json({ mesaj: 'Bu takip numarasıyla sipariş bulunamadı.' });
+        const row = result.rows[0];
+        res.json({
+            id: row.id,
+            tarih: row.tarih,
+            urunler: row.urunler,
+            toplamTutar: row.toplam_tutar,
+            durum: row.durum
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ mesaj: 'Sipariş sorgulanamadı.' });
+    }
+});
+
+app.use('/api', (req, res) => {
+    res.status(404).json({ mesaj: 'API endpoint bulunamadı.' });
+});
+
+app.use((req, res) => {
+    if (req.path.startsWith('/api/')) return res.status(404).json({ mesaj: 'Bulunamadı' });
+    res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
 app.listen(PORT, () => {

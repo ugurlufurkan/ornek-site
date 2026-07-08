@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kavrulmuş — Aksaray'dan taze kavrulmuş premium kahve çekirdekleri. Online sipariş, hızlı teslimat.">
+    <meta property="og:title" content="Kavrulmuş | Premium Kahve">
+    <meta property="og:description" content="3. nesil kavurma atölyesinden kapınıza taze kahve.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <title>Kavrulmuş | Anasayfa</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     
@@ -16,6 +21,8 @@
     <link rel="stylesheet" href="css/modal.css">
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/account-menu.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
     <div class="cursor-ring" id="cursor-ring"></div>
@@ -73,8 +80,8 @@
     </nav>
 
     <header class="hero">
-        <video class="hero-video" autoplay muted loop playsinline preload="auto" poster="assets/images/hero/hero-poster.webp">
-            <source src="assets/videos/hero.mp4" type="video/mp4">
+        <video class="hero-video" autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1447933601403-0c6688de566e?auto=format&fit=crop&w=1920&q=80">
+            <source src="https://cdn.coverr.co/videos/coverr-preparing-a-cup-of-coffee-5635/1080p.mp4" type="video/mp4">
         </video>
         
         <div class="hero-overlay"></div>
@@ -99,77 +106,8 @@
             <p>En çok tercih edilen taze kavrulmuş çekirdeklerimiz.</p>
         </div>
         
-        <div class="products-grid">
-            
-            <div class="product-card animate fade-up">
-                <div class="card-image-wrapper">
-                    <div class="card-badges">
-                        <span class="badge bestseller">🔥 Bestseller</span>
-                        <span class="badge weight">250g</span>
-                    </div>
-                    <button
-    class="wishlist-btn"
-    data-id="${urun.id}">
-    ♡
-</button>
-                    <img src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=30&q=20&blur=20" data-src="https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=500&q=80" alt="Espresso" class="product-img">
-                    <div class="quick-view-overlay">
-                        <button class="btn-premium secondary">👁️ Quick View</button>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h3 class="product-title">Premium Espresso Blend</h3>
-                    <p class="product-type">%100 Arabica</p>
-                    <div class="card-footer">
-                        <span class="price">335 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Sepete Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card animate fade-up delay-2">
-                <div class="card-image-wrapper">
-                    <div class="card-badges">
-                        <span class="badge weight">250g</span>
-                    </div>
-                    <button class="wishlist-btn" data-id="${urun.id}">♡</button>
-                    <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=30&q=20&blur=20" data-src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=500&q=80" alt="Filtre Kahve" class="product-img">
-                    <div class="quick-view-overlay">
-                        <button class="btn-premium secondary">👁️ Quick View</button>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h3 class="product-title">Etiyopya Yirgacheffe</h3>
-                    <p class="product-type">Yöresel Filtre</p>
-                    <div class="card-footer">
-                        <span class="price">380 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Sepete Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card animate fade-up delay-3">
-                <div class="card-image-wrapper">
-                    <div class="card-badges">
-                        <span class="badge weight">1000g</span>
-                    </div>
-                    <button class="wishlist-btn" data-id="${urun.id}">♡</button>
-                    <img src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=30&q=20&blur=20" data-src="https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=500&q=80" alt="Kolombiya" class="product-img">
-                    <div class="quick-view-overlay">
-                        <button class="btn-premium secondary">👁️ Quick View</button>
-                    </div>
-                </div>
-                <div class="card-content">
-                    <h3 class="product-title">Kolombiya Supremo</h3>
-                    <p class="product-type">Toptan Çekirdek</p>
-                    <div class="card-footer">
-                        <span class="price">1250 TL</span>
-                        <button class="btn-premium primary add-to-cart">🛒 Sepete Ekle</button>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <div class="products-grid" data-limit="3"></div>
+        <p style="text-align:center;margin-top:30px;"><a href="urunler.html" class="btn-premium secondary">Tüm Ürünleri Gör →</a></p>
     </section>
 
     <section id="quiz" class="quiz-section page-bg" style="padding: 100px 50px; text-align:center;">
@@ -216,9 +154,9 @@
                 <h2>Kavrulmuş<span>.</span></h2>
                 <p>Aksaray Merkez'in 3. nesil kahve deneyimi. Çekirdekten fincana uzanan bu premium lezzet serüvenine ortak olun.</p>
                 <div class="social-icons">
-                    <a href="#">Ig</a>
-                    <a href="#">Fb</a>
-                    <a href="#">Tw</a>
+                    <a href="https://instagram.com/kavrulmus.kahve" target="_blank" rel="noopener noreferrer" aria-label="Instagram">Ig</a>
+                    <a href="https://facebook.com/kavrulmus" target="_blank" rel="noopener noreferrer" aria-label="Facebook">Fb</a>
+                    <a href="https://x.com/kavrulmus" target="_blank" rel="noopener noreferrer" aria-label="X">X</a>
                 </div>
             </div>
 
@@ -239,6 +177,7 @@
                     <li><a href="iade-sartlari.html">İade ve Değişim Şartları</a></li>
                     <li><a href="mesafeli-satis.html">Mesafeli Satış Sözleşmesi</a></li>
                     <li><a href="sss.html">Sıkça Sorulan Sorular</a></li>
+                    <li><a href="siparis-takip.html">Sipariş Takip</a></li>
                 </ul>
             </div>
 

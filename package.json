@@ -1,11 +1,14 @@
 {
   "name": "ornek-site",
   "version": "1.0.0",
-  "description": "",
+  "description": "Kavrulmuş premium kahve e-ticaret sitesi — Express, PostgreSQL, vanilla frontend",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node server.js",
+    "seed": "node seed.js",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
   },
   "keywords": [],
   "author": "",

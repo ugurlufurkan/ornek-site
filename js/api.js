@@ -91,6 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (sort === 'price-desc') filtered.sort((a, b) => Number(b.fiyat) - Number(a.fiyat));
         if (sort === 'name') filtered.sort((a, b) => a.baslik.localeCompare(b.baslik, 'tr'));
 
+        const limit = parseInt(productsGrid.dataset.limit, 10);
+        if (limit > 0) filtered = filtered.slice(0, limit);
+
         renderProducts(filtered);
     }
 
@@ -106,7 +109,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    showSkeleton();
+    showSkeleton(parseInt(productsGrid.dataset.limit, 10) || 6);
 
     try {
         const response = await fetch('/api/urunler');

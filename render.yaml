@@ -1,0 +1,47 @@
+services:
+  - type: web
+    name: kavrulmus
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: DB_USER
+        fromDatabase:
+          name: kavrulmus-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: kavrulmus-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: kavrulmus-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: kavrulmus-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: kavrulmus-db
+          property: database
+      - key: APP_URL
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: ADMIN_EMAIL
+        sync: false
+
+databases:
+  - name: kavrulmus-db
+    plan: free
