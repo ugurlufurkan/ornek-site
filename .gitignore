@@ -1,8 +1,22 @@
+# Bağımlılıklar ve Loglar
 node_modules/
+npm-debug.log
+
+# Çevre Değişkenleri ve Gizli Dosyalar
 .env
 .env.local
 .env.*.local
+
+# Örnek env dosyasının repoya gitmesine İZİN VERİYORUZ
 !.env.example
-*.zip
+
+# Geliştirici ve Editör Dosyaları
+.cursor/
+.vscode/
+.idea/
+*.swp
+
+# İşletim Sistemi Kalıntıları ve Sıkıştırılmış Dosyalar
 .DS_Store
 Thumbs.db
+*.zip
