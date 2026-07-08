@@ -160,12 +160,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- ÖDEME BİTİNCE SEPETİ SIFIRLAMA ---
+    // --- GERÇEK SİPARİŞİ SUNUCUYA GÖNDERME (CHECKOUT) ---
     const checkoutForm = document.getElementById('checkout-form');
-    if(checkoutForm) {
-        checkoutForm.addEventListener('submit', () => {
-            cart = []; // Sepeti bellekte sıfırla
-            renderCart(); // Ekranda da sıfırla
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Sayfanın yenilenmesini durdur
+            
+            // Formdaki bilgileri topla
+            const inputs = checkoutForm.querySelectorAll('input');
+            const isim = inputs[0].value;
+            const tel = inputs[1].value;
+            const adres = checkoutForm.querySelector('textarea').value;
+            const odeme = checkoutForm.querySelector('select').value;
+            const userEmail = localStorage.getItem('kavrulmus_user_email') || 'Misafir';
+
+            // Toplam tutarı hesapla
+            const toplamTutar = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+            const siparisVerisi = { musteriAd: isim, telefon: tel, adres: adres, odemeYontemi: odeme, sepet: cart, toplamTutar: toplamTutar, userEmail: userEmail };
+
+            try {
+                // Backend'e POST isteği at
+                const response = await fetch('/api/siparis', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(siparisVerisi)
+                });
+                
+                const data = await response.json();
+
+                if (response.ok) {
+                    cart = []; // Sepeti bellekte sıfırla
+                    renderCart(); // Ekranda sepeti boşalt
+                    
+                    document.getElementById('checkout-modal').classList.remove('active'); // Ödeme modalını kapat
+                    
+                    // Takip numarasını güncelle ve ekranda göster
+                    const trackingNoEl = document.querySelector('#tracking-modal p strong');
+                    if (trackingNoEl) trackingNoEl.innerText = `#${data.takipNo}`;
+                    
+                    document.getElementById('tracking-modal').classList.add('active'); // Takip modalını aç
+                    checkoutForm.reset();
+                    
+                    window.showToast(`✅ ${data.mesaj}`);
+                } else {
+                    window.showToast(`❌ ${data.mesaj}`);
+                }
+            } catch (error) {
+                window.showToast('❌ Sipariş iletilemedi. Sunucu açık mı?');
+            }
         });
     }
 
