@@ -60,6 +60,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             // ürünlerin görünür kalmasını garanti altına al.
             productsGrid.querySelectorAll('.product-card').forEach(card => card.classList.add('show'));
         }
+
+        // ÖNEMLİ: Ürün resimleri de API'den geldikten sonra DOM'a ekleniyor.
+        // animation.js sayfa ilk yüklenirken bu resimleri henüz göremediği için
+        // "loaded" class'ını hiç alamıyor ve CSS'teki opacity:0 + blur takılı
+        // kalıyordu (kartlar görünüyor ama fotoğraflar hep bulanık/boş duruyordu).
+        // Burada resim görünürlük mantığını yeni eklenen kartlar için tekrar çalıştırıyoruz.
+        if (window.KavrulmusAnimations && typeof window.KavrulmusAnimations.initImageReveal === 'function') {
+            window.KavrulmusAnimations.initImageReveal();
+        } else {
+            // animation.js henüz yüklenmediyse yine de resimlerin görünür kalmasını garanti altına al.
+            productsGrid.querySelectorAll('.product-img').forEach(img => img.classList.add('loaded'));
+        }
     } catch (error) {
         console.error("Ürünler çekilemedi:", error);
     }

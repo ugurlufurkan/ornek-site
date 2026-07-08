@@ -220,15 +220,46 @@ document.querySelectorAll(".btn-premium").forEach(button => {
    IMAGE REVEAL
 ===================================================== */
 
-document.querySelectorAll(".product-img").forEach(img => {
+function initImageReveal() {
 
-    img.addEventListener("load", () => {
+    // Sadece henüz "loaded" class'ı olmayan .product-img elemanlarını seç.
+    // Bu sayede fonksiyon sonradan (örn. ürünler API'den geldikten sonra)
+    // tekrar çağrıldığında zaten görünür olanları tekrar işlemeye çalışmaz.
+    document.querySelectorAll(".product-img:not(.loaded)").forEach(img => {
 
-        img.classList.add("loaded");
+        // Resim tarayıcı cache'inden anında geldiyse "load" eventi hiç
+        // tetiklenmeyebilir. Bu durumda class'ı elle ekliyoruz.
+        if (img.complete && img.naturalWidth > 0) {
+
+            img.classList.add("loaded");
+            return;
+
+        }
+
+        img.addEventListener("load", () => {
+
+            img.classList.add("loaded");
+
+        });
+
+        // Resim linki bozuksa/404 ise sonsuza dek bulanık kalmasın,
+        // en azından kartın geri kalanı görünür olsun.
+        img.addEventListener("error", () => {
+
+            img.classList.add("loaded");
+
+        });
 
     });
 
-});
+}
+
+initImageReveal();
+
+// Bu fonksiyonu dışarıdan (örn. api.js, ürünleri DOM'a ekledikten sonra)
+// tekrar çağırabilmek için global olarak erişilebilir yapıyoruz.
+window.KavrulmusAnimations = window.KavrulmusAnimations || {};
+window.KavrulmusAnimations.initImageReveal = initImageReveal;
 
 /* =====================================================
    LAZY LOADING
