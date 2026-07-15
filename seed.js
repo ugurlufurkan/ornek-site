@@ -1,8 +1,10 @@
 // seed.js
 // Çalıştır: npm run seed
-// Aynı isimde ürün varsa atlar (tekrar çalıştırılabilir).
+// Server açılırken otomatik de çağrılabilir.
+// Aynı isimde ürün varsa atlar.
 
 require('dotenv').config();
+
 const { eq } = require('drizzle-orm');
 const { db, pool } = require('./db');
 const { products } = require('./db/schema');
@@ -20,22 +22,28 @@ const kahveler = [
     { baslik: "Türk Kahvesi Özel Harman", tur: "Geleneksel", fiyat: 220, resim: "https://images.unsplash.com/photo-1506778020041-0ea35027d019?auto=format&fit=crop&w=500&q=80", stok: 50 }
 ];
 
+
 async function seedEt() {
+
     let eklenen = 0;
     let atlanan = 0;
 
     try {
+
         for (const kahve of kahveler) {
+
             const [mevcut] = await db
                 .select({ id: products.id })
                 .from(products)
                 .where(eq(products.baslik, kahve.baslik));
 
+
             if (mevcut) {
-                console.log(`⏭️  Zaten var: ${kahve.baslik}`);
+                console.log(`⏭️ Zaten var: ${kahve.baslik}`);
                 atlanan++;
                 continue;
             }
+
 
             await db.insert(products).values({
                 baslik: kahve.baslik,
@@ -44,17 +52,39 @@ async function seedEt() {
                 resim: kahve.resim,
                 stok: kahve.stok,
             });
+
+
             console.log(`✅ Eklendi: ${kahve.baslik}`);
             eklenen++;
         }
 
-        console.log(`\n🎉 Seed tamamlandı — ${eklenen} yeni ürün, ${atlanan} atlandı.`);
+
+        console.log(
+            `\n🎉 Seed tamamlandı — ${eklenen} yeni ürün, ${atlanan} atlandı.`
+        );
+
+
     } catch (err) {
-        console.error('❌ Hata:', err.message);
-        process.exitCode = 1;
-    } finally {
-        await pool.end();
+
+        console.error("❌ Seed hata:", err.message);
+        throw err;
+
     }
 }
 
-seedEt();
+
+// Server içinden kullanabilmek için
+module.exports = {
+    seedEt
+};
+
+
+// Manuel çalıştırma:
+// node seed.js
+if (require.main === module) {
+
+    seedEt()
+        .then(() => pool.end())
+        .catch(() => pool.end());
+
+}
